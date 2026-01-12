@@ -5,29 +5,56 @@
     <title>下载 App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {text-align:center;padding-top:50px;font-family:sans-serif;background-color:#00d4ff;}
-        .container {max-width:400px;margin:auto;padding:20px;}
-        button {
-            font-size:18px;
-            padding:15px;
-            border-radius:12px;
-            color:white;
-            border:none;
-            cursor:pointer;
-            width:100%;
-            margin-bottom:20px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        body {
+            text-align: center;
+            padding-top: 50px;
+            font-family: sans-serif;
+            
+            /* --- 背景图片设置开始 --- */
+            background-image: url('https://example.com/background.jpg'); /* https://pic.netbian.com/uploads/allimg/251221/213423-1766324063f81c.jpg */
+            background-size: cover;        /* 自动缩放填满屏幕 */
+            background-attachment: fixed;  /* 固定背景 */
+            background-position: center;   /* 图片居中 */
+            background-repeat: no-repeat;  /* 不重复 */
+            /* --- 背景图片设置结束 --- */
         }
-        .btn-1 {background-color:#FFD447;} /* 绿色 */
+
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            /* 如果图片背景太乱，可以给容器加一个半透明背景，让文字更清晰 */
+            background: rgba(255, 255, 255, 0.2); 
+            border-radius: 20px;
+            backdrop-filter: blur(5px); /* 背景模糊效果，很高级 */
+        }
+
+        button {
+            font-size: 18px;
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .btn-1 {background-color:#FFD447; color: #333;} /* 黄色 */
         .btn-2 {background-color:#007AFF;} /* 蓝色 */
-        button:hover {opacity: 0.8;}
+        .btn-3 {background-color:#007AFF;} /* 蓝色 */
+        .btn-4 {background-color:#007AFF;} /* 蓝色 */
+        
+        button:hover {opacity: 0.9; transform: scale(1.02);} /* 鼠标移上去微调 */
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>柠檬茶提供
-            请选择下载</h2>
+        <h2 style="color: white; text-shadow: 1px 1px 5px rgba(0,0,0,0.5);">
+            柠檬茶提供<br>请选择下载
+        </h2>
         
         <button class="btn-1" onclick="window.location.href='https://play.google.com/store/apps/details?id=com.doublep.wakey'">
             防止息屏
@@ -36,8 +63,18 @@
         <button class="btn-2" onclick="window.location.href='https://my5353.com/app2'">
             AAS
         </button>
+
+         <button class="btn-2" onclick="window.location.href='没有'">
+            空
+        </button>
+
+         <button class="btn-2" onclick="window.location.href='没有不要看了'">
+            空
+        </button>
         
-        <p style="color:#666; font-size:14px;">点击按钮开始下载</p>
+        <p style="color: white; font-size:14px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
+            点击按钮开始下载
+        </p>
     </div>
 </body>
 </html>
