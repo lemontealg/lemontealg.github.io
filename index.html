@@ -36,40 +36,27 @@
             background-position: center;
             background-repeat: no-repeat;
             opacity: 0;
-            animation: backgroundFade 25s infinite;
+            animation: backgroundFade 15s infinite;
         }
         
-        /* 设置每张图片的动画延迟 */
+        /* 第一张图 - 你的WebP链接 */
         .bg-image:nth-child(1) {
-            background-image: url('https://haowallpaper.com/link/common/file/getCroppingImg/18036016098626944');
+            background-image: url('https://i.ibb.co/wtRXTb3/16015528110706048.webp');
+            animation-delay: 0s;
         }
         
+        /* 第二张图 - 你的WebP链接 */
         .bg-image:nth-child(2) {
-            background-image: url('https://haowallpaper.com/link/common/file/getCroppingImg/08c9542211baacf7160b3f8f134bcafd');
-            animation-delay: 3s;
-        }
-        
-        .bg-image:nth-child(3) {
-            background-image: url('https://haowallpaper.com/link/common/file/getCroppingImg/17281386694626688');
-            animation-delay: 6s;
-        }
-        
-        .bg-image:nth-child(4) {
-            background-image: url('https://haowallpaper.com/link/common/file/getCroppingImg/15709184079663424');
-            animation-delay: 9s;
-        }
-        
-        .bg-image:nth-child(5) {
-            background-image: url('https://haowallpaper.com/link/common/file/getCroppingImg/18223487143497088');
-            animation-delay: 12s;
+            background-image: url('https://i.ibb.co/4n9fmY2d/17281386694626688.webp');
+            animation-delay: 7.5s;
         }
         
         /* 淡入淡出动画 */
         @keyframes backgroundFade {
             0% { opacity: 0; }
-            10% { opacity: 1; }
-            20% { opacity: 1; }
-            30% { opacity: 0; }
+            15% { opacity: 1; }
+            35% { opacity: 1; }
+            50% { opacity: 0; }
             100% { opacity: 0; }
         }
 
@@ -77,7 +64,7 @@
             max-width: 400px;
             margin: auto;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.2); 
+            background: rgba(0, 0, 0, 0.6); 
             border-radius: 20px;
             position: relative;
             z-index: 1;
@@ -117,11 +104,16 @@
             margin-top: 10px;
         }
         
+        .btn-video-2 {
+            background-color: #8A2BE2;
+            margin-top: 10px;
+        }
+        
         /* 视频播放器容器 */
         .video-container {
             margin-top: 20px;
             display: none;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.6);
             border-radius: 16px;
             padding: 10px;
         }
@@ -136,11 +128,12 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        video {
+        /* Google Drive 嵌入播放器样式 */
+        .drive-player {
             width: 100%;
-            max-height: 300px;
+            height: 300px;
             border-radius: 12px;
-            outline: none;
+            border: none;
         }
         
         .video-title {
@@ -165,7 +158,6 @@
         
         .close-video:hover {
             background-color: rgba(255, 255, 255, 0.5);
-            transform: scale(1.02);
         }
 
         h2 {
@@ -178,12 +170,6 @@
             color: white; 
             font-size:14px; 
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-        }
-        
-        .button-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
         }
         
         .app-buttons {
@@ -202,11 +188,8 @@
     </style>
 </head>
 <body>
-    <!-- 背景图片容器 -->
+    <!-- 背景图片容器 - 使用你的两张WebP图片 -->
     <div class="background-container">
-        <div class="bg-image"></div>
-        <div class="bg-image"></div>
-        <div class="bg-image"></div>
         <div class="bg-image"></div>
         <div class="bg-image"></div>
     </div>
@@ -228,72 +211,70 @@
             </button>
         </div>
         
-        <!-- 视频观看按钮 -->
+        <!-- 两个视频观看按钮 -->
         <div class="video-buttons">
             <button class="btn-video" onclick="playVideo('video1')">
-                ▶ SUKISU教程
+                ▶ 视频 1 - SUKISU教程
             </button>
             
-            <button class="btn-video" onclick="playVideo('video2')">
-                ▶ 空
+            <button class="btn-video-2" onclick="playVideo('video2')">
+                ▶ 视频 2 - 第二个视频
             </button>
         </div>
         
         <!-- 视频播放区域 -->
         <div id="videoContainer" class="video-container">
-            <div class="video-title" id="videoTitle">正在播放：视频 1</div>
+            <div class="video-title" id="videoTitle">正在播放</div>
             
-            <!-- 视频播放器 - 使用您的视频链接 -->
-            <video id="videoPlayer" controls>
-                <source id="videoSource" src="" type="video/mp4">
-                您的浏览器不支持视频播放
-            </video>
+            <!-- Google Drive 嵌入播放器 -->
+            <iframe id="drivePlayer" class="drive-player" 
+                    src=""
+                    allow="autoplay; encrypted-media"
+                    allowfullscreen>
+            </iframe>
             
             <!-- 关闭按钮 -->
-            <button class="close-video" onclick="closeVideo()">
-                关闭视频
-            </button>
+            <button class="close-video" onclick="closeVideo()">关闭视频</button>
         </div>
         
-        <p>
-            点击按钮开始下载或观看视频
-        </p>
+        <p>点击按钮开始下载或观看视频</p>
     </div>
     
     <script>
-        // 视频链接配置 - 请替换成您的视频地址
-        const videoUrls = {
-            video1: 'https://drive.google.com/file/d/1clTYzm2fLepJZ8N3Ibs_mcd8zD_DsRSB/view?usp=sharing',  // 示例视频1 (小视频)
-            video2: 'https://youtu.be/9gOhPv0_iyk?si=qDdn-bHAN8WfxHig'     // 示例视频2
+        // 两个不同的Google Drive视频
+        const videos = {
+            video1: {
+                id: '1clTYzm2fLepJZ8N3Ibs_mcd8zD_DsRSB',  // 你的SUKISU教程视频
+                title: 'SUKISU教程'
+            },
+            video2: {
+                id: 'https://youtu.be/9gOhPv0_iyk?si=jYYKgfeO60Whfg0e',  // 这里填第二个视频的ID
+                title: '第二个视频'
+            }
         };
         
-        const videoTitles = {
-            video1: '视频 1 - 示例视频',
-            video2: '视频 2 - 示例视频'
-        };
-        
-        // 获取DOM元素
         const videoContainer = document.getElementById('videoContainer');
-        const videoPlayer = document.getElementById('videoPlayer');
-        const videoSource = document.getElementById('videoSource');
+        const drivePlayer = document.getElementById('drivePlayer');
         const videoTitle = document.getElementById('videoTitle');
         
         // 播放视频函数
         function playVideo(videoKey) {
-            // 设置视频源
-            videoSource.src = videoUrls[videoKey];
-            videoTitle.textContent = `正在播放：${videoTitles[videoKey]}`;
+            const video = videos[videoKey];
             
-            // 重新加载视频
-            videoPlayer.load();
+            // 检查是否有视频ID
+            if (!video.id) {
+                alert('请先设置第二个视频的ID');
+                return;
+            }
+            
+            // 设置视频标题
+            videoTitle.textContent = `正在播放：${video.title}`;
+            
+            // 设置Google Drive嵌入播放器链接
+            drivePlayer.src = `https://drive.google.com/file/d/${video.id}/preview`;
             
             // 显示视频容器
             videoContainer.classList.add('show');
-            
-            // 尝试播放（浏览器可能需要用户交互才能自动播放）
-            videoPlayer.play().catch(e => {
-                console.log('自动播放失败，等待用户点击播放按钮', e);
-            });
             
             // 滚动到视频位置
             videoContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -301,36 +282,10 @@
         
         // 关闭视频函数
         function closeVideo() {
-            // 暂停视频
-            videoPlayer.pause();
-            // 清空视频源
-            videoSource.src = '';
-            videoPlayer.load();
-            // 隐藏容器
+            // 清空iframe源，停止播放
+            drivePlayer.src = '';
             videoContainer.classList.remove('show');
         }
-        
-        // 预加载图片
-        window.onload = function() {
-            const imageUrls = [
-                'https://haowallpaper.com/link/common/file/getCroppingImg/18036016098626944',
-                'https://haowallpaper.com/link/common/file/getCroppingImg/08c9542211baacf7160b3f8f134bcafd',
-                'https://haowallpaper.com/link/common/file/getCroppingImg/17281386694626688',
-                'https://haowallpaper.com/link/common/file/getCroppingImg/15709184079663424',
-                'https://haowallpaper.com/link/common/file/getCroppingImg/18223487143497088'
-            ];
-            
-            // 预加载所有图片
-            imageUrls.forEach(url => {
-                const img = new Image();
-                img.src = url;
-            });
-        };
-        
-        // 可选：当视频结束时显示提示
-        videoPlayer.addEventListener('ended', function() {
-            console.log('视频播放结束');
-        });
     </script>
 </body>
 </html>
