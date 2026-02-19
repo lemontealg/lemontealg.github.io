@@ -2,12 +2,12 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>下载 App</title>
+    <title>下载 App - 柠檬茶</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             text-align: center;
-            padding-top: 50px;
+            padding-top: 30px;
             font-family: sans-serif;
             margin: 0;
             min-height: 100vh;
@@ -67,21 +67,11 @@
         
         /* 淡入淡出动画 */
         @keyframes backgroundFade {
-            0% {
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            20% {
-                opacity: 1;
-            }
-            30% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 0;
-            }
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            20% { opacity: 1; }
+            30% { opacity: 0; }
+            100% { opacity: 0; }
         }
 
         .container {
@@ -92,6 +82,7 @@
             border-radius: 20px;
             position: relative;
             z-index: 1;
+            backdrop-filter: blur(5px);
         }
 
         button {
@@ -105,12 +96,110 @@
             margin-bottom: 20px;
             font-weight: bold;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
         }
 
-        .btn-1 {background-color:#FFD447; color: #333;} /* 黄色 */
-        .btn-2 {background-color:#007AFF;} /* 蓝色 */
+        .btn-1 {
+            background-color: #FFD447; 
+            color: #333;
+        }
         
-        button:hover {opacity: 0.9; transform: scale(1.02);}
+        .btn-2 {
+            background-color: #007AFF;
+        }
+        
+        .btn-video {
+            background-color: #FF3B30;
+            margin-top: 10px;
+        }
+        
+        /* 视频播放器容器 */
+        .video-container {
+            margin-top: 20px;
+            display: none;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 10px;
+        }
+        
+        .video-container.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        video {
+            width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            outline: none;
+        }
+        
+        .video-title {
+            color: white;
+            margin: 10px 0 5px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            font-size: 16px;
+        }
+        
+        .close-video {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: 1px solid white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+            cursor: pointer;
+            width: auto;
+            display: inline-block;
+        }
+        
+        .close-video:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.02);
+        }
+
+        h2 {
+            color: white; 
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
+        }
+        
+        p {
+            color: white; 
+            font-size:14px; 
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .app-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .video-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -125,32 +214,111 @@
     
     <!-- 内容容器 -->
     <div class="container">
-        <h2 style="color: white; text-shadow: 1px 1px 5px rgba(0,0,0,0.5);">
-            柠檬茶提供<br>请选择下载
+        <h2>
+            柠檬茶提供<br>请选择下载或观看视频
         </h2>
         
-        <button class="btn-1" onclick="window.location.href='https://play.google.com/store/apps/details?id=com.doublep.wakey'">
-            防止息屏
-        </button>
+        <!-- App 下载按钮 -->
+        <div class="app-buttons">
+            <button class="btn-1" onclick="window.location.href='https://play.google.com/store/apps/details?id=com.doublep.wakey'">
+                防止息屏
+            </button>
 
-        <button class="btn-2" onclick="window.location.href='https://my5353.com/app2'">
-            AAS
-        </button>
+            <button class="btn-2" onclick="window.location.href='https://my5353.com/app2'">
+                AAS
+            </button>
+        </div>
         
-        <p style="color: white; font-size:14px; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
-            点击按钮开始下载
+        <!-- 视频观看按钮 -->
+        <div class="video-buttons">
+            <button class="btn-video" onclick="playVideo('video1')">
+                ▶ SUKISU教程
+            </button>
+            
+            <button class="btn-video" onclick="playVideo('video2')">
+                ▶ 空
+            </button>
+        </div>
+        
+        <!-- 视频播放区域 -->
+        <div id="videoContainer" class="video-container">
+            <div class="video-title" id="videoTitle">正在播放：视频 1</div>
+            
+            <!-- 视频播放器 - 使用您的视频链接 -->
+            <video id="videoPlayer" controls>
+                <source id="videoSource" src="" type="video/mp4">
+                您的浏览器不支持视频播放
+            </video>
+            
+            <!-- 关闭按钮 -->
+            <button class="close-video" onclick="closeVideo()">
+                关闭视频
+            </button>
+        </div>
+        
+        <p>
+            点击按钮开始下载或观看视频
         </p>
     </div>
     
     <script>
-        // 可选：预加载图片确保切换流畅
+        // 视频链接配置 - 请替换成您的视频地址
+        const videoUrls = {
+            video1: 'https://drive.google.com/file/d/1clTYzm2fLepJZ8N3Ibs_mcd8zD_DsRSB/view?usp=sharing',  // 示例视频1 (小视频)
+            video2: 'https://youtu.be/9gOhPv0_iyk?si=qDdn-bHAN8WfxHig'     // 示例视频2
+        };
+        
+        const videoTitles = {
+            video1: '视频 1 - 示例视频',
+            video2: '视频 2 - 示例视频'
+        };
+        
+        // 获取DOM元素
+        const videoContainer = document.getElementById('videoContainer');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoSource = document.getElementById('videoSource');
+        const videoTitle = document.getElementById('videoTitle');
+        
+        // 播放视频函数
+        function playVideo(videoKey) {
+            // 设置视频源
+            videoSource.src = videoUrls[videoKey];
+            videoTitle.textContent = `正在播放：${videoTitles[videoKey]}`;
+            
+            // 重新加载视频
+            videoPlayer.load();
+            
+            // 显示视频容器
+            videoContainer.classList.add('show');
+            
+            // 尝试播放（浏览器可能需要用户交互才能自动播放）
+            videoPlayer.play().catch(e => {
+                console.log('自动播放失败，等待用户点击播放按钮', e);
+            });
+            
+            // 滚动到视频位置
+            videoContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        // 关闭视频函数
+        function closeVideo() {
+            // 暂停视频
+            videoPlayer.pause();
+            // 清空视频源
+            videoSource.src = '';
+            videoPlayer.load();
+            // 隐藏容器
+            videoContainer.classList.remove('show');
+        }
+        
+        // 预加载图片
         window.onload = function() {
             const imageUrls = [
-                'https://pic.netbian.com/uploads/allimg/250724/233936-1753371576e741.jpg',
-                'https://preview.qiantucdn.com/58pic/zw/YX/X5/Ew0MSbEylDq53JhOFnpxiuzNRTUy39mKL4_PIC2018.jpg!qt_w320',
-                'https://editor-img.888ban.com/ips_templ_preview/2021-09-02/lg_668150_1630569026_613082423825d.jpg!w360_png?auth_key=2398953600-0-0-9398a02ce646780e1a3705b2bbf9920e',
-                'https://img.52desk.com/tp/233412ebhWa.jpg',
-                'https://preview.qiantucdn.com/auto_machine/20240618/815764f2-2c28-4d24-9da6-0a1bec51ce88.jpg!qt_w320_webp'
+                'https://pic.dmjnb.com/pic/721a3a4031ae2aac4c11283049cc2a64',
+                'https://i.imgur.com/l5yW8Me.png',
+                'https://haowallpaper.com/link/common/file/getCroppingImg/18223487143497088',
+                'https://haowallpaper.com/link/common/file/getCroppingImg/15709184079663424',
+                'https://haowallpaper.com/link/common/file/getCroppingImg/17281386694626688'
             ];
             
             // 预加载所有图片
@@ -159,6 +327,11 @@
                 img.src = url;
             });
         };
+        
+        // 可选：当视频结束时显示提示
+        videoPlayer.addEventListener('ended', function() {
+            console.log('视频播放结束');
+        });
     </script>
 </body>
 </html>
