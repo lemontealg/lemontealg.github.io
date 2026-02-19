@@ -64,11 +64,11 @@
             max-width: 400px;
             margin: auto;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.6); 
+            background: transparent;  /* 完全透明 */
             border-radius: 20px;
             position: relative;
             z-index: 1;
-            backdrop-filter: blur(5px);
+            /* 移除 backdrop-filter: blur(5px); */
         }
 
         button {
@@ -194,7 +194,7 @@
         <div class="bg-image"></div>
     </div>
     
-    <!-- 内容容器 -->
+    <!-- 内容容器 - 背景完全透明 -->
     <div class="container">
         <h2>
             柠檬茶提供<br>请选择下载或观看视频
@@ -248,7 +248,7 @@
                 title: 'SUKISU教程'
             },
             video2: {
-                id: 'https://youtu.be/9gOhPv0_iyk?si=jYYKgfeO60Whfg0e',  // 这里填第二个视频的ID
+                id: '',  // 这里填第二个视频的ID
                 title: '第二个视频'
             }
         };
