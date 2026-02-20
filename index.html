@@ -68,7 +68,6 @@
             border-radius: 20px;
             position: relative;
             z-index: 1;
-            /* 移除 backdrop-filter: blur(5px); */
         }
 
         button {
@@ -185,6 +184,132 @@
             gap: 10px;
             margin-top: 5px;
         }
+
+        /* 密码弹窗样式 */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .password-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .password-box {
+            background: rgba(30, 30, 30, 0.95);
+            border-radius: 28px;
+            padding: 25px;
+            width: 280px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.15);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .password-overlay.active .password-box {
+            transform: scale(1);
+        }
+
+        .password-box h3 {
+            color: white;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 500;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            font-size: 22px;
+        }
+
+        .password-box input {
+            width: 100%;
+            padding: 15px 0 15px 15px;
+            border: none;
+            border-radius: 40px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            font-size: 18px;
+            outline: none;
+            box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: 0.2s;
+            margin-bottom: 15px;
+            text-align: center;
+            letter-spacing: 3px;
+        }
+
+        .password-box input:focus {
+            background: rgba(255,255,255,0.25);
+            border-color: #FFD447;
+        }
+
+        .password-box input::placeholder {
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+            letter-spacing: normal;
+        }
+
+        .password-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .password-actions button {
+            margin: 0;
+            padding: 12px 0;
+            font-size: 16px;
+            border-radius: 40px;
+            width: 100%;
+        }
+
+        .btn-confirm {
+            background-color: #FFD447;
+            color: #222;
+        }
+
+        .btn-cancel {
+            background-color: transparent;
+            border: 1px solid rgba(255,255,255,0.5);
+            color: white;
+            box-shadow: none;
+        }
+
+        .btn-cancel:hover {
+            background-color: rgba(255,255,255,0.1);
+            transform: none;
+        }
+
+        .error-message {
+            color: #FF6B6B;
+            font-size: 13px;
+            margin-top: 8px;
+            min-height: 20px;
+            text-align: left;
+            padding-left: 10px;
+        }
+
+        /* 视频ID占位提示 */
+        .note-id {
+            color: rgba(255,255,255,0.7);
+            background: rgba(0,0,0,0.3);
+            border-radius: 40px;
+            padding: 5px 12px;
+            font-size: 13px;
+            display: inline-block;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -213,11 +338,11 @@
         
         <!-- 两个视频观看按钮 -->
         <div class="video-buttons">
-            <button class="btn-video" onclick="playVideo('video1')">
+            <button class="btn-video" onclick="requestPasswordAndPlay('video1')">
                 ▶ 视频 1 - SUKISU教程
             </button>
             
-            <button class="btn-video-2" onclick="playVideo('video2')">
+            <button class="btn-video-2" onclick="requestPasswordAndPlay('video2')">
                 ▶ 视频 2 - 第二个视频
             </button>
         </div>
@@ -236,8 +361,24 @@
             <!-- 关闭按钮 -->
             <button class="close-video" onclick="closeVideo()">关闭视频</button>
         </div>
+
+        <!-- 提示信息，显示第二个视频需要设置ID -->
+        <div class="note-id" id="video2Note" style="display: none;">⚠️ 第二个视频ID暂未设置，请在代码中配置</div>
         
         <p>点击按钮开始下载或观看视频</p>
+    </div>
+
+    <!-- 密码输入浮层 -->
+    <div id="passwordOverlay" class="password-overlay">
+        <div class="password-box">
+            <h3>🔐 请输入密码</h3>
+            <input type="password" id="passwordInput" placeholder="密码" maxlength="20" autocomplete="off">
+            <div id="passwordError" class="error-message"></div>
+            <div class="password-actions">
+                <button class="btn-cancel" onclick="closePasswordModal()">取消</button>
+                <button class="btn-confirm" id="confirmPasswordBtn">确认</button>
+            </div>
+        </div>
     </div>
     
     <script>
@@ -252,18 +393,74 @@
                 title: '第二个视频'
             }
         };
+
+        // 如果video2没有ID，显示提示
+        if (!videos.video2.id) {
+            document.getElementById('video2Note').style.display = 'inline-block';
+        }
         
         const videoContainer = document.getElementById('videoContainer');
         const drivePlayer = document.getElementById('drivePlayer');
         const videoTitle = document.getElementById('videoTitle');
         
-        // 播放视频函数
-        function playVideo(videoKey) {
+        // 密码相关元素
+        const passwordOverlay = document.getElementById('passwordOverlay');
+        const passwordInput = document.getElementById('passwordInput');
+        const passwordError = document.getElementById('passwordError');
+        const confirmBtn = document.getElementById('confirmPasswordBtn');
+        
+        // 存储当前尝试播放的视频key
+        let pendingVideoKey = null;
+        
+        // 预设密码（可以自由修改）
+        const CORRECT_PASSWORD = '553553';  // 改成你想要的密码，例如 '柠檬茶' 或 '123456'
+        
+        // 打开密码模态框
+        function openPasswordModal(videoKey) {
+            pendingVideoKey = videoKey;
+            passwordInput.value = '';
+            passwordError.textContent = '';
+            passwordOverlay.classList.add('active');
+            // 自动聚焦输入框
+            setTimeout(() => passwordInput.focus(), 100);
+        }
+        
+        // 关闭密码模态框
+        function closePasswordModal() {
+            passwordOverlay.classList.remove('active');
+            pendingVideoKey = null;
+        }
+        
+        // 验证密码并播放
+        function confirmPasswordAndPlay() {
+            const enteredPassword = passwordInput.value.trim();
+            
+            if (!enteredPassword) {
+                passwordError.textContent = '请输入密码';
+                return;
+            }
+            
+            if (enteredPassword === CORRECT_PASSWORD) {
+                passwordError.textContent = '';
+                // 密码正确，执行播放
+                if (pendingVideoKey) {
+                    performPlayVideo(pendingVideoKey);
+                }
+                closePasswordModal();
+            } else {
+                passwordError.textContent = '密码错误，请重试';
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+        
+        // 执行实际播放 (原来的playVideo逻辑)
+        function performPlayVideo(videoKey) {
             const video = videos[videoKey];
             
             // 检查是否有视频ID
             if (!video.id) {
-                alert('请先设置第二个视频的ID');
+                alert(`视频「${video.title}」的ID未设置，请先在代码中配置。`);
                 return;
             }
             
@@ -280,12 +477,52 @@
             videoContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
+        // 请求密码并播放 (替代原有的playVideo)
+        function requestPasswordAndPlay(videoKey) {
+            // 如果video2没有id且点击的是video2，可以友好提示（可选）
+            if (videoKey === 'video2' && !videos.video2.id) {
+                alert('第二个视频ID暂未设置，请先填写代码中的video2.id');
+                return;
+            }
+            if (videoKey === 'video1' && !videos.video1.id) {
+                alert('视频1 ID不存在');
+                return;
+            }
+            // 打开密码模态框
+            openPasswordModal(videoKey);
+        }
+        
         // 关闭视频函数
         function closeVideo() {
             // 清空iframe源，停止播放
             drivePlayer.src = '';
             videoContainer.classList.remove('show');
         }
+        
+        // 事件监听：确认按钮
+        confirmBtn.addEventListener('click', confirmPasswordAndPlay);
+        
+        // 回车键也可以确认
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                confirmPasswordAndPlay();
+            }
+        });
+        
+        // 点击遮罩层关闭（可选）
+        passwordOverlay.addEventListener('click', function(e) {
+            if (e.target === passwordOverlay) {
+                closePasswordModal();
+            }
+        });
+
+        // 原有playVideo函数保留但不再直接使用 (以防万一有人调用)，为了不破坏原结构但隐藏掉，其实可以删掉，但为了兼容我们重写。
+        // 为了避免冲突，将原playVideo重命名或覆盖。直接覆盖掉。
+        window.playVideo = function(videoKey) {
+            // 这个函数不再使用，但保留定义防止按钮误调？不会，因为按钮已经改成requestPasswordAndPlay
+            console.log('请使用密码验证');
+        };
     </script>
 </body>
 </html>
