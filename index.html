@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>柠檬茶</title>
+    <title>柠檬茶 · 轻享版</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         /* ========== 全局样式 ========== */
@@ -277,44 +277,51 @@
             text-align: center;
         }
 
-        /* ========== 后台管理样式 ========== */
+        /* ========== 后台管理样式 (优化版) ========== */
         .admin-container {
             max-width: 1200px;
             margin: 30px auto;
-            background: white;
+            background: #ffffff;
             border-radius: 32px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             overflow: hidden;
-            padding: 30px;
+            padding: 30px 35px;
             position: relative;
             z-index: 100;
+            border: 1px solid rgba(255,212,71,0.2);
         }
 
         .admin-container h1 {
             font-size: 28px;
-            font-weight: 600;
+            font-weight: 650;
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            color: #1e1e2f;
+            gap: 12px;
+            margin-bottom: 10px;
+            color: #1a1e2b;
+            letter-spacing: -0.3px;
         }
 
         .admin-container h1 span {
             background: #FFD447;
-            padding: 5px 15px;
+            padding: 6px 16px;
             border-radius: 40px;
-            font-size: 16px;
+            font-size: 15px;
+            font-weight: 600;
             color: #1e1e2f;
+            box-shadow: 0 2px 6px rgba(255,212,71,0.3);
         }
 
         .admin-container h2 {
             font-size: 20px;
-            font-weight: 500;
-            margin: 30px 0 15px;
+            font-weight: 600;
+            margin: 32px 0 18px;
             border-left: 6px solid #FFD447;
-            padding-left: 15px;
-            color: #1e1e2f;
+            padding-left: 16px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .card-grid {
@@ -324,102 +331,126 @@
         }
 
         .card {
-            background: #f9fafc;
-            border-radius: 24px;
-            padding: 22px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-            border: 1px solid #eaeef2;
+            background: #f8fafd;
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            border: 1px solid #e9edf2;
+            transition: all 0.2s;
+        }
+        .card:hover {
+            border-color: #FFD447;
+            box-shadow: 0 8px 20px rgba(255,212,71,0.12);
         }
 
         .card label {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            color: #4a4a6a;
+            color: #475569;
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
         }
 
         .card input, .card select {
             width: 100%;
-            padding: 12px 16px;
-            border-radius: 60px;
-            border: 1px solid #d0d7de;
+            padding: 12px 18px;
+            border-radius: 40px;
+            border: 1px solid #dde3e9;
             font-size: 15px;
             background: white;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             transition: 0.2s;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
         }
 
         .card input:focus, .card select:focus {
             border-color: #FFD447;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(255,212,71,0.2);
+            box-shadow: 0 0 0 4px rgba(255,212,71,0.15);
         }
 
         .badge {
             background: #FFD447;
             color: #1e1e2f;
-            padding: 4px 12px;
+            padding: 5px 14px;
             border-radius: 40px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 700;
             display: inline-block;
-            margin-bottom: 10px;
+            margin-bottom: 14px;
+            letter-spacing: 0.2px;
         }
 
         .btn-primary {
             background: #FFD447;
-            border: 1px solid #e6bc30;
-            color: #1e1e2f;
-            padding: 12px 24px;
+            border: none;
+            color: #1a1e2b;
+            padding: 12px 28px;
             border-radius: 60px;
             font-weight: 600;
             font-size: 15px;
             cursor: pointer;
             width: auto;
-            margin-right: 10px;
+            box-shadow: 0 4px 10px rgba(255,212,71,0.3);
+            transition: 0.15s;
+        }
+        .btn-primary:hover {
+            background: #ffcd2b;
+            transform: scale(1.02);
         }
 
         .btn-danger {
-            background: #fff1f0;
-            border: 1px solid #ffa39e;
+            background: #fff2f0;
+            border: 1px solid #ffbbb5;
             color: #b34033;
-            padding: 8px 16px;
+            padding: 8px 18px;
             border-radius: 60px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
+            transition: 0.15s;
+        }
+        .btn-danger:hover {
+            background: #ffe4e0;
+            border-color: #ff8a7a;
         }
 
         .btn-success {
-            background: #e3f7e3;
-            border: 1px solid #a3d8a3;
-            color: #1e6f1e;
-            padding: 12px 30px;
+            background: #f0f9f0;
+            border: 1px solid #bae3b0;
+            color: #1f6d1f;
+            padding: 12px 32px;
             border-radius: 60px;
             font-weight: 600;
             font-size: 16px;
             cursor: pointer;
+            transition: 0.15s;
+        }
+        .btn-success:hover {
+            background: #e0f0dc;
+            border-color: #8bc481;
         }
 
         .flex-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
 
         .publish-bar {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             align-items: center;
             flex-wrap: wrap;
-            margin-top: 30px;
-            padding: 20px;
-            background: #f6f8fa;
-            border-radius: 40px;
+            margin-top: 40px;
+            padding: 20px 28px;
+            background: #f2f5f9;
+            border-radius: 50px;
+            border: 1px solid #e2e8f0;
         }
 
         .admin-header {
@@ -427,15 +458,44 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .logout-btn {
-            background: #f0f2f5;
-            border: 1px solid #d0d7de;
-            padding: 10px 20px;
+            background: #f1f4f9;
+            border: 1px solid #cfd9e6;
+            padding: 10px 24px;
             border-radius: 40px;
             cursor: pointer;
             font-weight: 600;
+            color: #334155;
+            transition: 0.15s;
+        }
+        .logout-btn:hover {
+            background: #e2e8f0;
+            border-color: #a0b3cc;
+        }
+
+        /* 视频卡片专用样式 */
+        .video-card {
+            background: #f8fafd;
+            border-radius: 28px;
+            padding: 22px 25px;
+            margin-bottom: 20px;
+            border: 1px solid #e9edf2;
+        }
+        .video-card:hover {
+            border-color: #FFD447;
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr 2fr;
+            gap: 16px;
+            align-items: center;
+        }
+        @media (max-width:700px){
+            .video-grid { grid-template-columns: 1fr 2fr; }
         }
 
         /* 登录弹窗 */
@@ -474,6 +534,7 @@
             margin-bottom: 30px;
             border: none;
             text-align: center;
+            text-shadow: none;
         }
 
         .login-box input {
@@ -500,6 +561,28 @@
             color: white;
             text-align: center;
             padding: 50px;
+        }
+        .admin-container .loading {
+            color: #1e293b;
+        }
+        /* 全局密码框 */
+        .global-password-wrap {
+            background: #f8fafd;
+            padding: 18px 25px;
+            border-radius: 40px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .global-password-wrap input {
+            flex: 1;
+            min-width: 200px;
+            padding: 14px 20px;
+            border-radius: 60px;
+            border: 1px solid #dde3e9;
+            font-size: 15px;
         }
     </style>
 </head>
@@ -528,7 +611,7 @@
     <div id="frontendContainer" class="container">
         <div id="loadingMessage" class="loading">加载配置中...</div>
         <div id="mainContent" style="display: none;">
-            <h2>柠檬茶提供<br>请选择下载或观看视频</h2>
+            <h2>🍋 柠檬茶提供<br>请选择下载或观看视频</h2>
             
             <div class="app-buttons" id="appButtons"></div>
             <div class="video-buttons" id="videoButtons"></div>
@@ -544,30 +627,32 @@
         </div>
     </div>
 
-    <!-- 后台界面 -->
+    <!-- 后台界面 (优化后) -->
     <div id="adminContainer" class="admin-container hidden">
         <div class="admin-header">
             <h1>🍋 柠檬茶 · 后台管理 <span>管理员</span></h1>
             <button class="logout-btn" onclick="logout()">退出后台</button>
         </div>
 
-        <div id="adminLoading" class="loading" style="color:#000;">加载中...</div>
+        <div id="adminLoading" class="loading" style="color:#1e293b;">加载中...</div>
         <div id="adminContent" style="display: none;">
+            <!-- 视频通用密码 优化卡片 -->
             <h2>🔐 视频通用密码</h2>
-            <div style="margin-bottom:20px;">
-                <input type="text" id="adminGlobalPassword" placeholder="例如 123456" style="width:200px; padding:12px; border-radius:40px; border:1px solid #d0d7de;">
+            <div class="global-password-wrap">
+                <input type="text" id="adminGlobalPassword" placeholder="例如 123456 (留空则无需密码)" value="">
+                <span style="color:#4b5565; font-size:14px;">修改后需手动保存至Gist</span>
             </div>
 
-            <h2>📲 App 下载按钮</h2>
+            <h2>📲 App 下载按钮 <span style="font-size:14px; font-weight:400; color:#666; margin-left:8px;">可自由增删颜色</span></h2>
             <div id="appButtonsAdmin" class="card-grid"></div>
-            <button class="btn-primary" onclick="addAppButton()" style="margin-top:15px;">➕ 新增下载按钮</button>
+            <button class="btn-primary" onclick="addAppButton()" style="margin-top:20px;">➕ 新增下载按钮</button>
 
-            <h2 style="margin-top:40px;">🎬 视频按钮</h2>
+            <h2 style="margin-top:48px;">🎬 视频按钮 · 管理</h2>
             <div id="videoButtonsAdmin"></div>
-            <button class="btn-primary" onclick="addVideoButton()">➕ 新增视频按钮</button>
+            <button class="btn-primary" onclick="addVideoButton()" style="margin-top:10px;">➕ 新增视频按钮</button>
 
             <div class="publish-bar">
-                <div style="flex:1;"><strong>📤 保存配置</strong> <span style="color:#666; margin-left:15px;">点击按钮直接跳转到 Gist 编辑页面</span></div>
+                <div style="flex:1;"><strong>📤 保存配置到 Gist</strong> <span style="color:#4b5565; margin-left:15px;">点击按钮跳转编辑，粘贴修改后的JSON</span></div>
                 <button class="btn-success" onclick="openGistEdit()">✏️ 前往 Gist 修改</button>
             </div>
         </div>
@@ -588,13 +673,9 @@
 
     <script>
         // ========== 配置 ==========
-        // ⚠️ 重要：改成你的 Gist Raw 链接（去掉版本号）
         const GIST_URL = 'https://gist.githubusercontent.com/lemontealg/0f92da20b392ee53b27754ba06306566/raw/config.json';
-        
-        // Gist 编辑页面链接
         const GIST_EDIT_URL = 'https://gist.github.com/lemontealg/0f92da20b392ee53b27754ba06306566/edit';
 
-        // ========== 登录凭证 ==========
         const ADMIN_CREDENTIALS = {
             username: 'lg',
             password: '128128'
@@ -603,7 +684,6 @@
         let config = null;
         let isAdmin = sessionStorage.getItem('lemontea_admin') === 'true';
 
-        // ========== 初始化 ==========
         window.onload = async function() {
             await loadConfig();
             
@@ -618,7 +698,6 @@
             }
         };
 
-        // ========== 从 Gist 加载配置 ==========
         async function loadConfig() {
             try {
                 document.getElementById('loadingMessage').style.display = 'block';
@@ -630,8 +709,7 @@
                 document.getElementById('loadingMessage').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
             } catch (error) {
-                console.error('加载配置失败', error);
-                // 使用默认配置
+                console.error('加载配置失败，使用默认配置', error);
                 config = {
                     globalPassword: '123456',
                     appButtons: [
@@ -665,7 +743,6 @@
             }
         });
 
-        // ========== 登录处理 ==========
         window.handleLogin = function() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
@@ -682,7 +759,6 @@
             }
         };
 
-        // ========== 退出登录 ==========
         window.logout = function() {
             sessionStorage.removeItem('lemontea_admin');
             isAdmin = false;
@@ -739,57 +815,57 @@
             });
         }
 
-        // ========== 渲染后台 ==========
+        // ========== 渲染后台 (优化视觉 + 完整数据绑定) ==========
         function renderAdmin() {
             document.getElementById('adminLoading').style.display = 'none';
             document.getElementById('adminContent').style.display = 'block';
             
-            document.getElementById('adminGlobalPassword').value = config.globalPassword;
+            document.getElementById('adminGlobalPassword').value = config.globalPassword || '';
             
+            // App 按钮卡片
             const appAdmin = document.getElementById('appButtonsAdmin');
             appAdmin.innerHTML = '';
             config.appButtons.forEach((btn, idx) => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
-                    <div class="badge">按钮 ${idx+1}</div>
+                    <div class="badge">📱 按钮 ${idx+1}</div>
                     <label>按钮名称</label>
-                    <input type="text" id="app_label_${idx}" value="${btn.label.replace(/"/g, '&quot;')}">
+                    <input type="text" id="app_label_${idx}" value="${(btn.label || '').replace(/"/g, '&quot;')}">
                     <label>链接 (URL)</label>
-                    <input type="url" id="app_url_${idx}" value="${btn.url.replace(/"/g, '&quot;')}">
-                    <label>背景颜色</label>
-                    <input type="text" id="app_color_${idx}" value="${btn.color}">
-                    <div style="display: flex; gap: 8px;">
+                    <input type="url" id="app_url_${idx}" value="${(btn.url || '').replace(/"/g, '&quot;')}">
+                    <label>背景颜色 <span style="font-weight:400; color:#666;">(如 #FFD447)</span></label>
+                    <input type="text" id="app_color_${idx}" value="${btn.color || '#FFD447'}">
+                    <div style="display: flex; gap: 8px; justify-content:flex-end; margin-top:8px;">
                         ${config.appButtons.length > 1 ? `<button class="btn-danger" onclick="removeAppButton(${idx})">🗑️ 删除</button>` : ''}
                     </div>
                 `;
                 appAdmin.appendChild(card);
             });
             
+            // 视频按钮管理 (优化卡片布局)
             const videoAdmin = document.getElementById('videoButtonsAdmin');
             videoAdmin.innerHTML = '';
             config.videoButtons.forEach((v, idx) => {
                 const div = document.createElement('div');
-                div.style.background = '#f5f7fa';
-                div.style.borderRadius = '28px';
-                div.style.padding = '20px';
-                div.style.marginBottom = '20px';
+                div.className = 'video-card';
                 div.innerHTML = `
                     <div class="flex-row">
-                        <span class="badge">视频 ${idx+1}</span>
+                        <span class="badge">🎬 视频 ${idx+1}</span>
                         ${config.videoButtons.length > 1 ? `<button class="btn-danger" onclick="removeVideoButton(${idx})">🗑️ 移除</button>` : ''}
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 2fr 1fr 2fr; gap: 15px;">
+                    <div class="video-grid">
                         <label>按钮名称</label>
-                        <input type="text" id="video_label_${idx}" value="${v.label.replace(/"/g, '&quot;')}">
-                        <label>平台类型</label>
+                        <input type="text" id="video_label_${idx}" value="${(v.label || '').replace(/"/g, '&quot;')}">
+                        <label>平台</label>
                         <select id="video_platform_${idx}">
                             <option value="google-drive" ${v.platform === 'google-drive' ? 'selected' : ''}>Google Drive</option>
                             <option value="youtube" ${v.platform === 'youtube' ? 'selected' : ''}>YouTube</option>
                         </select>
-                        <label style="grid-column:1/2;">视频ID/链接</label>
+                        
+                        <label style="grid-column:1/2;">ID/链接</label>
                         <div style="grid-column:2/5;">
-                            <input type="text" id="video_input_${idx}" value="${(v.platform === 'google-drive' ? v.fileId : v.youtubeUrl) || ''}" placeholder="${v.platform === 'google-drive' ? 'Google Drive 文件ID' : 'YouTube URL 或 ID'}">
+                            <input type="text" id="video_input_${idx}" value="${(v.platform === 'google-drive' ? v.fileId || '' : v.youtubeUrl || '')}" placeholder="${v.platform === 'google-drive' ? '文件ID' : 'YouTube URL 或 ID'}">
                         </div>
                     </div>
                 `;
@@ -822,9 +898,8 @@
             }
         };
 
-        // ========== 跳转到 Gist 编辑 ==========
+        // ========== 跳转到 Gist 编辑 (收集当前配置) ==========
         window.openGistEdit = function() {
-            // 收集当前表单的配置
             const currentConfig = {
                 globalPassword: document.getElementById('adminGlobalPassword').value,
                 appButtons: config.appButtons.map((_, idx) => ({
@@ -844,16 +919,9 @@
                 })
             };
             
-            // 生成格式化的 JSON
             const configStr = JSON.stringify(currentConfig, null, 2);
-            
-            // 显示提示
-            alert('👉 步骤：\n1. 复制下面弹出的配置内容\n2. 点击确定后打开 Gist\n3. 粘贴覆盖原有内容\n4. 点击 Update 保存');
-            
-            // 弹出配置内容让用户复制
+            alert('👉 步骤：\n1. 复制弹出的配置内容\n2. 点击确定后打开 Gist\n3. 粘贴覆盖原有内容\n4. 点击 Update 保存');
             prompt('复制这个配置 (Ctrl+C)，然后粘贴到 Gist 中', configStr);
-            
-            // 跳转到 Gist 编辑页面
             window.open(GIST_EDIT_URL, '_blank');
         };
 
