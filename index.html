@@ -2,14 +2,18 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>下载 App - 柠檬茶</title>
+    <title>柠檬茶</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            text-align: center;
-            padding-top: 30px;
-            font-family: sans-serif;
+        /* ========== 全局样式 ========== */
+        * {
+            box-sizing: border-box;
             margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
@@ -25,7 +29,6 @@
             z-index: -1;
         }
         
-        /* 背景图片样式 */
         .bg-image {
             position: absolute;
             top: 0;
@@ -39,19 +42,16 @@
             animation: backgroundFade 15s infinite;
         }
         
-        /* 第一张图 - 你的WebP链接 */
         .bg-image:nth-child(1) {
             background-image: url('https://i.ibb.co/wtRXTb3/16015528110706048.webp');
             animation-delay: 0s;
         }
         
-        /* 第二张图 - 你的WebP链接 */
         .bg-image:nth-child(2) {
             background-image: url('https://i.ibb.co/4n9fmY2d/17281386694626688.webp');
             animation-delay: 7.5s;
         }
         
-        /* 淡入淡出动画 */
         @keyframes backgroundFade {
             0% { opacity: 0; }
             15% { opacity: 1; }
@@ -60,14 +60,36 @@
             100% { opacity: 0; }
         }
 
+        /* ========== 前台样式 ========== */
         .container {
             max-width: 400px;
             margin: auto;
             padding: 20px;
-            background: transparent;  /* 完全透明 */
+            background: transparent;
             border-radius: 20px;
             position: relative;
             z-index: 1;
+        }
+
+        /* 左上角登录入口 */
+        .login-entrance {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 100;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(2px);
+            transition: all 0.3s ease;
+        }
+
+        .login-entrance:hover {
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(0, 0, 0, 0.4);
         }
 
         button {
@@ -89,26 +111,26 @@
             transform: scale(1.02);
         }
 
-        .btn-1 {
-            background-color: #FFD447; 
-            color: #333;
+        h2 {
+            color: white;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
         }
         
-        .btn-2 {
-            background-color: #007AFF;
+        p {
+            color: white;
+            font-size:14px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
         }
         
-        .btn-video {
-            background-color: #FF3B30;
-            margin-top: 10px;
+        .app-buttons, .video-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 15px;
         }
-        
-        .btn-video-2 {
-            background-color: #8A2BE2;
-            margin-top: 10px;
-        }
-        
-        /* 视频播放器容器 */
+
+        /* 视频播放器 */
         .video-container {
             margin-top: 20px;
             display: none;
@@ -127,8 +149,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Google Drive 嵌入播放器样式 */
-        .drive-player {
+        .drive-player, .youtube-player {
             width: 100%;
             height: 300px;
             border-radius: 12px;
@@ -154,38 +175,8 @@
             width: auto;
             display: inline-block;
         }
-        
-        .close-video:hover {
-            background-color: rgba(255, 255, 255, 0.5);
-        }
 
-        h2 {
-            color: white; 
-            text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
-            margin-bottom: 30px;
-        }
-        
-        p {
-            color: white; 
-            font-size:14px; 
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-        }
-        
-        .app-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .video-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 5px;
-        }
-
-        /* 密码弹窗样式 */
+        /* 密码弹窗 */
         .password-overlay {
             position: fixed;
             top: 0;
@@ -228,7 +219,6 @@
             margin-top: 0;
             margin-bottom: 20px;
             font-weight: 500;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
             font-size: 22px;
         }
 
@@ -243,21 +233,8 @@
             outline: none;
             box-sizing: border-box;
             border: 1px solid rgba(255,255,255,0.2);
-            transition: 0.2s;
             margin-bottom: 15px;
             text-align: center;
-            letter-spacing: 3px;
-        }
-
-        .password-box input:focus {
-            background: rgba(255,255,255,0.25);
-            border-color: #FFD447;
-        }
-
-        .password-box input::placeholder {
-            color: rgba(255,255,255,0.5);
-            font-size: 14px;
-            letter-spacing: normal;
         }
 
         .password-actions {
@@ -283,12 +260,6 @@
             background-color: transparent;
             border: 1px solid rgba(255,255,255,0.5);
             color: white;
-            box-shadow: none;
-        }
-
-        .btn-cancel:hover {
-            background-color: rgba(255,255,255,0.1);
-            transform: none;
         }
 
         .error-message {
@@ -296,233 +267,636 @@
             font-size: 13px;
             margin-top: 8px;
             min-height: 20px;
-            text-align: left;
-            padding-left: 10px;
         }
 
-        /* 视频ID占位提示 */
-        .note-id {
-            color: rgba(255,255,255,0.7);
-            background: rgba(0,0,0,0.3);
+        /* ========== 后台管理样式 ========== */
+        .admin-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+            padding: 30px;
+            position: relative;
+            z-index: 100;
+        }
+
+        .admin-container h1 {
+            font-size: 28px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: #1e1e2f;
+        }
+
+        .admin-container h1 span {
+            background: #FFD447;
+            padding: 5px 15px;
             border-radius: 40px;
-            padding: 5px 12px;
+            font-size: 16px;
+            color: #1e1e2f;
+        }
+
+        .admin-container h2 {
+            font-size: 20px;
+            font-weight: 500;
+            margin: 30px 0 15px;
+            border-left: 6px solid #FFD447;
+            padding-left: 15px;
+            color: #1e1e2f;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: #f9fafc;
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            border: 1px solid #eaeef2;
+        }
+
+        .card label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a4a6a;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .card input, .card select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 60px;
+            border: 1px solid #d0d7de;
+            font-size: 15px;
+            background: white;
+            margin-bottom: 20px;
+            transition: 0.2s;
+        }
+
+        .card input:focus, .card select:focus {
+            border-color: #FFD447;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255,212,71,0.2);
+        }
+
+        .badge {
+            background: #FFD447;
+            color: #1e1e2f;
+            padding: 4px 12px;
+            border-radius: 40px;
             font-size: 13px;
+            font-weight: 600;
             display: inline-block;
-            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: #FFD447;
+            border: 1px solid #e6bc30;
+            color: #1e1e2f;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .btn-danger {
+            background: #fff1f0;
+            border: 1px solid #ffa39e;
+            color: #b34033;
+            padding: 8px 16px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-success {
+            background: #e3f7e3;
+            border: 1px solid #a3d8a3;
+            color: #1e6f1e;
+            padding: 12px 30px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .publish-bar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f6f8fa;
+            border-radius: 40px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logout-btn {
+            background: #f0f2f5;
+            border: 1px solid #d0d7de;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* 登录弹窗 */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .login-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .login-box {
+            background: white;
+            border-radius: 32px;
+            padding: 40px;
+            width: 340px;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            color: #1e1e2f;
+            margin-bottom: 30px;
+            border: none;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #d0d7de;
+            border-radius: 40px;
+            font-size: 16px;
+        }
+
+        .login-box button {
+            background: #FFD447;
+            color: #1e1e2f;
+            margin-bottom: 0;
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <!-- 背景图片容器 - 使用你的两张WebP图片 -->
+    <!-- 背景图片容器 -->
     <div class="background-container">
         <div class="bg-image"></div>
         <div class="bg-image"></div>
     </div>
-    
-    <!-- 内容容器 - 背景完全透明 -->
-    <div class="container">
-        <h2>
-            柠檬茶提供<br>请选择下载或观看视频
-        </h2>
-        
-        <!-- App 下载按钮 -->
-        <div class="app-buttons">
-            <button class="btn-1" onclick="window.location.href='https://play.google.com/store/apps/details?id=com.doublep.wakey'">
-                防止息屏
-            </button>
 
-            <button class="btn-2" onclick="window.location.href='https://my5353.com/app2'">
-                AAS
-            </button>
+    <!-- 左上角登录入口 -->
+    <div class="login-entrance" onclick="showLoginModal()">🔐 登录</div>
+
+    <!-- 登录弹窗 (初始隐藏) -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-box">
+            <h2>管理员登录</h2>
+            <input type="text" id="username" placeholder="账号" value="">
+            <input type="password" id="password" placeholder="密码" value="">
+            <button onclick="handleLogin()">进入后台</button>
+            <p style="margin-top:15px; font-size:12px; color:#999;" onclick="closeLoginModal()">点击空白处关闭</p>
         </div>
+    </div>
+
+    <!-- 前台界面 (默认显示) -->
+    <div id="frontendContainer" class="container">
+        <h2>      柠檬茶提供<br>请选择下载或观看视频</h2>
         
-        <!-- 两个视频观看按钮 -->
-        <div class="video-buttons">
-            <button class="btn-video" onclick="requestPasswordAndPlay('video1')">
-                ▶ 视频 1 - SUKISU教程
-            </button>
-            
-            <button class="btn-video-2" onclick="requestPasswordAndPlay('video2')">
-                ▶ 视频 2 - 第二个视频
-            </button>
-        </div>
+        <div class="app-buttons" id="appButtons"></div>
+        <div class="video-buttons" id="videoButtons"></div>
         
         <!-- 视频播放区域 -->
         <div id="videoContainer" class="video-container">
             <div class="video-title" id="videoTitle">正在播放</div>
-            
-            <!-- Google Drive 嵌入播放器 -->
-            <iframe id="drivePlayer" class="drive-player" 
-                    src=""
-                    allow="autoplay; encrypted-media"
-                    allowfullscreen>
-            </iframe>
-            
-            <!-- 关闭按钮 -->
+            <div id="playerContainer" style="width:100%; height:300px; border-radius:12px;"></div>
             <button class="close-video" onclick="closeVideo()">关闭视频</button>
         </div>
-
-        <!-- 提示信息，显示第二个视频需要设置ID -->
-        <div class="note-id" id="video2Note" style="display: none;"></div>
         
         <p>点击按钮开始下载或观看视频</p>
     </div>
 
-    <!-- 密码输入浮层 -->
+    <!-- 后台界面 (初始隐藏) -->
+    <div id="adminContainer" class="admin-container hidden">
+        <div class="admin-header">
+            <h1>🍋 柠檬茶 · 后台管理 <span>管理员</span></h1>
+            <button class="logout-btn" onclick="logout()">退出后台</button>
+        </div>
+
+        <h2>🔐 视频通用密码</h2>
+        <div style="margin-bottom:20px;">
+            <input type="text" id="adminGlobalPassword" placeholder="例如 123456" style="width:200px; padding:12px; border-radius:40px; border:1px solid #d0d7de;">
+        </div>
+
+        <h2>📲 App 下载按钮</h2>
+        <div id="appButtonsAdmin" class="card-grid"></div>
+        <button class="btn-primary" onclick="addAppButton()" style="margin-top:15px;">➕ 新增下载按钮</button>
+
+        <h2 style="margin-top:40px;">🎬 视频按钮</h2>
+        <div id="videoButtonsAdmin"></div>
+        <button class="btn-primary" onclick="addVideoButton()">➕ 新增视频按钮</button>
+
+        <div class="publish-bar">
+            <div style="flex:1;"><strong>📤 保存配置</strong> <span style="color:#666; margin-left:15px;">修改后点击保存，前台立即生效</span></div>
+            <button class="btn-success" onclick="saveConfig()">💾 保存配置</button>
+        </div>
+    </div>
+
+    <!-- 视频密码弹窗 -->
     <div id="passwordOverlay" class="password-overlay">
         <div class="password-box">
             <h3>🔐 请输入密码</h3>
-            <input type="password" id="passwordInput" placeholder="密码" maxlength="20" autocomplete="off">
-            <div id="passwordError" class="error-message"></div>
+            <input type="password" id="videoPasswordInput" placeholder="密码">
+            <div id="videoPasswordError" class="error-message"></div>
             <div class="password-actions">
-                <button class="btn-cancel" onclick="closePasswordModal()">取消</button>
-                <button class="btn-confirm" id="confirmPasswordBtn">确认</button>
+                <button class="btn-cancel" onclick="closeVideoPasswordModal()">取消</button>
+                <button class="btn-confirm" onclick="confirmVideoPassword()">确认</button>
             </div>
         </div>
     </div>
-    
+
     <script>
-        // 两个不同的Google Drive视频
-        const videos = {
-            video1: {
-                id: '1clTYzm2fLepJZ8N3Ibs_mcd8zD_DsRSB',  // 你的SUKISU教程视频
-                title: 'SUKISU教程'
-            },
-            video2: {
-                id: '',  // 这里填第二个视频的ID
-                title: '第二个视频'
-            }
+        // ========== 配置数据 ==========
+        let config = {
+            globalPassword: '123456',
+            appButtons: [
+                { label: '防止息屏', url: 'https://play.google.com/store/apps/details?id=com.doublep.wakey', color: '#FFD447' },
+                { label: 'AAS', url: 'https://my5353.com/app2', color: '#007AFF' }
+            ],
+            videoButtons: [
+                { label: 'SUKISU教程', platform: 'google-drive', fileId: '1clTYzm2fLepJZ8N3Ibs_mcd8zD_DsRSB', youtubeUrl: '' },
+                { label: '第二个视频', platform: 'youtube', fileId: '', youtubeUrl: 'dQw4w9WgXcQ' }
+            ]
         };
 
-        // 如果video2没有ID，显示提示
-        if (!videos.video2.id) {
-            document.getElementById('video2Note').style.display = 'inline-block';
-        }
-        
-        const videoContainer = document.getElementById('videoContainer');
-        const drivePlayer = document.getElementById('drivePlayer');
-        const videoTitle = document.getElementById('videoTitle');
-        
-        // 密码相关元素
-        const passwordOverlay = document.getElementById('passwordOverlay');
-        const passwordInput = document.getElementById('passwordInput');
-        const passwordError = document.getElementById('passwordError');
-        const confirmBtn = document.getElementById('confirmPasswordBtn');
-        
-        // 存储当前尝试播放的视频key
-        let pendingVideoKey = null;
-        
-        // 预设密码（可以自由修改）
-        const CORRECT_PASSWORD = '553553';  // 改成你想要的密码，例如 '柠檬茶' 或 '123456'
-        
-        // 打开密码模态框
-        function openPasswordModal(videoKey) {
-            pendingVideoKey = videoKey;
-            passwordInput.value = '';
-            passwordError.textContent = '';
-            passwordOverlay.classList.add('active');
-            // 自动聚焦输入框
-            setTimeout(() => passwordInput.focus(), 100);
-        }
-        
-        // 关闭密码模态框
-        function closePasswordModal() {
-            passwordOverlay.classList.remove('active');
-            pendingVideoKey = null;
-        }
-        
-        // 验证密码并播放
-        function confirmPasswordAndPlay() {
-            const enteredPassword = passwordInput.value.trim();
-            
-            if (!enteredPassword) {
-                passwordError.textContent = '请输入密码';
-                return;
+        // ========== 登录凭证 ==========
+        const ADMIN_CREDENTIALS = {
+            username: 'lg',
+            password: '128128'
+        };
+
+        // 检查是否已登录 (使用session，关闭标签页就失效)
+        let isAdmin = sessionStorage.getItem('lemontea_admin') === 'true';
+
+        // ========== 初始化 ==========
+        window.onload = function() {
+            // 加载保存的配置
+            const savedConfig = localStorage.getItem('lemontea_config');
+            if (savedConfig) {
+                try {
+                    config = JSON.parse(savedConfig);
+                } catch (e) {}
             }
             
-            if (enteredPassword === CORRECT_PASSWORD) {
-                passwordError.textContent = '';
-                // 密码正确，执行播放
-                if (pendingVideoKey) {
-                    performPlayVideo(pendingVideoKey);
-                }
-                closePasswordModal();
+            // 如果已登录，显示后台；否则显示前台
+            if (isAdmin) {
+                document.getElementById('frontendContainer').classList.add('hidden');
+                document.getElementById('adminContainer').classList.remove('hidden');
+                renderAdmin();
             } else {
-                passwordError.textContent = '密码错误，请重试';
-                passwordInput.value = '';
-                passwordInput.focus();
+                document.getElementById('frontendContainer').classList.remove('hidden');
+                document.getElementById('adminContainer').classList.add('hidden');
+                renderFrontend();
             }
-        }
-        
-        // 执行实际播放 (原来的playVideo逻辑)
-        function performPlayVideo(videoKey) {
-            const video = videos[videoKey];
-            
-            // 检查是否有视频ID
-            if (!video.id) {
-                alert(`视频「${video.title}」的ID未设置，请先在代码中配置。`);
-                return;
-            }
-            
-            // 设置视频标题
-            videoTitle.textContent = `正在播放：${video.title}`;
-            
-            // 设置Google Drive嵌入播放器链接
-            drivePlayer.src = `https://drive.google.com/file/d/${video.id}/preview`;
-            
-            // 显示视频容器
-            videoContainer.classList.add('show');
-            
-            // 滚动到视频位置
-            videoContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-        
-        // 请求密码并播放 (替代原有的playVideo)
-        function requestPasswordAndPlay(videoKey) {
-            // 如果video2没有id且点击的是video2，可以友好提示（可选）
-            if (videoKey === 'video2' && !videos.video2.id) {
-                alert('第二个视频ID暂未设置，请先填写代码中的video2.id');
-                return;
-            }
-            if (videoKey === 'video1' && !videos.video1.id) {
-                alert('视频1 ID不存在');
-                return;
-            }
-            // 打开密码模态框
-            openPasswordModal(videoKey);
-        }
-        
-        // 关闭视频函数
-        function closeVideo() {
-            // 清空iframe源，停止播放
-            drivePlayer.src = '';
-            videoContainer.classList.remove('show');
-        }
-        
-        // 事件监听：确认按钮
-        confirmBtn.addEventListener('click', confirmPasswordAndPlay);
-        
-        // 回车键也可以确认
-        passwordInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                confirmPasswordAndPlay();
-            }
-        });
-        
-        // 点击遮罩层关闭（可选）
-        passwordOverlay.addEventListener('click', function(e) {
-            if (e.target === passwordOverlay) {
-                closePasswordModal();
+        };
+
+        // ========== 登录弹窗控制 ==========
+        window.showLoginModal = function() {
+            document.getElementById('loginOverlay').classList.add('active');
+            // 清空输入框
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        };
+
+        window.closeLoginModal = function() {
+            document.getElementById('loginOverlay').classList.remove('active');
+        };
+
+        // 点击遮罩层关闭
+        document.getElementById('loginOverlay').addEventListener('click', function(e) {
+            if (e.target === document.getElementById('loginOverlay')) {
+                closeLoginModal();
             }
         });
 
-        // 原有playVideo函数保留但不再直接使用 (以防万一有人调用)，为了不破坏原结构但隐藏掉，其实可以删掉，但为了兼容我们重写。
-        // 为了避免冲突，将原playVideo重命名或覆盖。直接覆盖掉。
-        window.playVideo = function(videoKey) {
-            // 这个函数不再使用，但保留定义防止按钮误调？不会，因为按钮已经改成requestPasswordAndPlay
-            console.log('请使用密码验证');
+        // ========== 登录处理 ==========
+        window.handleLogin = function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                sessionStorage.setItem('lemontea_admin', 'true');
+                isAdmin = true;
+                closeLoginModal();
+                document.getElementById('frontendContainer').classList.add('hidden');
+                document.getElementById('adminContainer').classList.remove('hidden');
+                renderAdmin();
+            } else {
+                alert('账号或密码错误');
+            }
         };
+
+        // ========== 退出登录 ==========
+        window.logout = function() {
+            sessionStorage.removeItem('lemontea_admin');
+            isAdmin = false;
+            document.getElementById('adminContainer').classList.add('hidden');
+            document.getElementById('frontendContainer').classList.remove('hidden');
+            renderFrontend();
+        };
+
+        // ========== 渲染前台 ==========
+        function renderFrontend() {
+            // 更新视频密码
+            window.videoGlobalPassword = config.globalPassword;
+            
+            // 构建 videoConfig
+            window.videoConfig = {};
+            config.videoButtons.forEach((v, idx) => {
+                let videoId = '';
+                if (v.platform === 'google-drive') {
+                    videoId = v.fileId || '';
+                } else {
+                    let ytId = v.youtubeUrl || '';
+                    if (ytId.includes('youtu.be')) {
+                        const parts = ytId.split('/');
+                        ytId = parts[parts.length-1].split('?')[0];
+                    } else if (ytId.includes('youtube.com/watch')) {
+                        const match = ytId.match(/[?&]v=([^&]+)/);
+                        if (match) ytId = match[1];
+                    }
+                    videoId = ytId;
+                }
+                
+                window.videoConfig['video' + idx] = {
+                    platform: v.platform,
+                    id: videoId,
+                    title: v.label || ('视频' + (idx+1))
+                };
+            });
+            
+            // 渲染App按钮
+            const appDiv = document.getElementById('appButtons');
+            appDiv.innerHTML = '';
+            config.appButtons.forEach(btn => {
+                const button = document.createElement('button');
+                button.style.backgroundColor = btn.color || '#FFD447';
+                button.style.color = (btn.color || '').toUpperCase() === '#FFD447' ? '#333' : 'white';
+                button.textContent = btn.label || '下载';
+                button.onclick = () => window.location.href = btn.url;
+                appDiv.appendChild(button);
+            });
+            
+            // 渲染视频按钮
+            const videoDiv = document.getElementById('videoButtons');
+            videoDiv.innerHTML = '';
+            config.videoButtons.forEach((v, idx) => {
+                const button = document.createElement('button');
+                button.style.backgroundColor = idx === 0 ? '#FF3B30' : (idx === 1 ? '#8A2BE2' : '#FF8C00');
+                button.textContent = '▶ ' + (v.label || ('视频 ' + (idx+1)));
+                button.onclick = () => requestVideoPasswordAndPlay('video' + idx);
+                videoDiv.appendChild(button);
+            });
+        }
+
+        // ========== 渲染后台 ==========
+        function renderAdmin() {
+            document.getElementById('adminGlobalPassword').value = config.globalPassword;
+            
+            // 渲染App按钮管理
+            const appAdmin = document.getElementById('appButtonsAdmin');
+            appAdmin.innerHTML = '';
+            config.appButtons.forEach((btn, idx) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="badge">按钮 ${idx+1}</div>
+                    <label>按钮名称</label>
+                    <input type="text" id="app_label_${idx}" value="${btn.label.replace(/"/g, '&quot;')}">
+                    <label>链接 (URL)</label>
+                    <input type="url" id="app_url_${idx}" value="${btn.url.replace(/"/g, '&quot;')}">
+                    <label>背景颜色</label>
+                    <input type="text" id="app_color_${idx}" value="${btn.color}">
+                    <div style="display: flex; gap: 8px;">
+                        ${config.appButtons.length > 1 ? `<button class="btn-danger" onclick="removeAppButton(${idx})">🗑️ 删除</button>` : ''}
+                    </div>
+                `;
+                appAdmin.appendChild(card);
+            });
+            
+            // 渲染视频按钮管理
+            const videoAdmin = document.getElementById('videoButtonsAdmin');
+            videoAdmin.innerHTML = '';
+            config.videoButtons.forEach((v, idx) => {
+                const div = document.createElement('div');
+                div.style.background = '#f5f7fa';
+                div.style.borderRadius = '28px';
+                div.style.padding = '20px';
+                div.style.marginBottom = '20px';
+                div.innerHTML = `
+                    <div class="flex-row">
+                        <span class="badge">视频 ${idx+1}</span>
+                        ${config.videoButtons.length > 1 ? `<button class="btn-danger" onclick="removeVideoButton(${idx})">🗑️ 移除</button>` : ''}
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 2fr 1fr 2fr; gap: 15px;">
+                        <label>按钮名称</label>
+                        <input type="text" id="video_label_${idx}" value="${v.label.replace(/"/g, '&quot;')}">
+                        <label>平台类型</label>
+                        <select id="video_platform_${idx}">
+                            <option value="google-drive" ${v.platform === 'google-drive' ? 'selected' : ''}>Google Drive</option>
+                            <option value="youtube" ${v.platform === 'youtube' ? 'selected' : ''}>YouTube</option>
+                        </select>
+                        <label style="grid-column:1/2;">视频ID/链接</label>
+                        <div style="grid-column:2/5;">
+                            <input type="text" id="video_input_${idx}" value="${(v.platform === 'google-drive' ? v.fileId : v.youtubeUrl) || ''}" placeholder="${v.platform === 'google-drive' ? 'Google Drive 文件ID' : 'YouTube URL 或 ID'}">
+                        </div>
+                    </div>
+                `;
+                videoAdmin.appendChild(div);
+            });
+        }
+
+        // ========== 后台操作 ==========
+        window.addAppButton = function() {
+            config.appButtons.push({ label: '新下载', url: 'https://', color: '#FFD447' });
+            renderAdmin();
+        };
+
+        window.removeAppButton = function(index) {
+            if (config.appButtons.length > 1) {
+                config.appButtons.splice(index, 1);
+                renderAdmin();
+            }
+        };
+
+        window.addVideoButton = function() {
+            config.videoButtons.push({ label: '新视频', platform: 'google-drive', fileId: '', youtubeUrl: '' });
+            renderAdmin();
+        };
+
+        window.removeVideoButton = function(index) {
+            if (config.videoButtons.length > 1) {
+                config.videoButtons.splice(index, 1);
+                renderAdmin();
+            }
+        };
+
+        window.saveConfig = function() {
+            // 读取全局密码
+            config.globalPassword = document.getElementById('adminGlobalPassword').value;
+            
+            // 读取App按钮
+            config.appButtons = config.appButtons.map((_, idx) => ({
+                label: document.getElementById(`app_label_${idx}`)?.value || '按钮',
+                url: document.getElementById(`app_url_${idx}`)?.value || 'https://',
+                color: document.getElementById(`app_color_${idx}`)?.value || '#FFD447'
+            }));
+            
+            // 读取视频按钮
+            config.videoButtons = config.videoButtons.map((_, idx) => {
+                const platform = document.getElementById(`video_platform_${idx}`)?.value || 'google-drive';
+                const inputVal = document.getElementById(`video_input_${idx}`)?.value || '';
+                return {
+                    label: document.getElementById(`video_label_${idx}`)?.value || '视频',
+                    platform: platform,
+                    fileId: platform === 'google-drive' ? inputVal : '',
+                    youtubeUrl: platform === 'youtube' ? inputVal : ''
+                };
+            });
+            
+            // 保存到localStorage
+            localStorage.setItem('lemontea_config', JSON.stringify(config));
+            
+            alert('✅ 配置已保存！前台页面刷新后生效');
+        };
+
+        // ========== 视频播放逻辑 ==========
+        let pendingVideoKey = null;
+
+        window.requestVideoPasswordAndPlay = function(videoKey) {
+            if (!window.videoConfig[videoKey] || !window.videoConfig[videoKey].id) {
+                alert('视频尚未配置ID，请管理员在后台设置');
+                return;
+            }
+            pendingVideoKey = videoKey;
+            document.getElementById('videoPasswordInput').value = '';
+            document.getElementById('videoPasswordError').textContent = '';
+            document.getElementById('passwordOverlay').classList.add('active');
+            setTimeout(() => document.getElementById('videoPasswordInput').focus(), 100);
+        };
+
+        window.closeVideoPasswordModal = function() {
+            document.getElementById('passwordOverlay').classList.remove('active');
+            pendingVideoKey = null;
+        };
+
+        window.confirmVideoPassword = function() {
+            if (!config.globalPassword) {
+                if (pendingVideoKey) performPlayVideo(pendingVideoKey);
+                closeVideoPasswordModal();
+                return;
+            }
+            
+            const entered = document.getElementById('videoPasswordInput').value.trim();
+            if (entered !== config.globalPassword) {
+                document.getElementById('videoPasswordError').textContent = '密码错误';
+                document.getElementById('videoPasswordInput').value = '';
+                document.getElementById('videoPasswordInput').focus();
+                return;
+            }
+            
+            if (pendingVideoKey) performPlayVideo(pendingVideoKey);
+            closeVideoPasswordModal();
+        };
+
+        function performPlayVideo(videoKey) {
+            const video = window.videoConfig[videoKey];
+            if (!video) return;
+            
+            document.getElementById('videoTitle').textContent = `正在播放：${video.title}`;
+            const playerContainer = document.getElementById('playerContainer');
+            playerContainer.innerHTML = '';
+            
+            if (video.platform === 'google-drive') {
+                const iframe = document.createElement('iframe');
+                iframe.className = 'drive-player';
+                iframe.src = `https://drive.google.com/file/d/${video.id}/preview`;
+                iframe.allow = 'autoplay; encrypted-media';
+                iframe.allowFullscreen = true;
+                playerContainer.appendChild(iframe);
+            } else {
+                const iframe = document.createElement('iframe');
+                iframe.className = 'youtube-player';
+                iframe.src = `https://www.youtube.com/embed/${video.id}?autoplay=1`;
+                iframe.allow = 'accelerometer; autoplay; encrypted-media';
+                iframe.allowFullscreen = true;
+                playerContainer.appendChild(iframe);
+            }
+            
+            document.getElementById('videoContainer').classList.add('show');
+            document.getElementById('videoContainer').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        window.closeVideo = function() {
+            document.getElementById('playerContainer').innerHTML = '';
+            document.getElementById('videoContainer').classList.remove('show');
+        };
+
+        // 点击密码弹窗遮罩层关闭
+        document.getElementById('passwordOverlay').addEventListener('click', function(e) {
+            if (e.target === document.getElementById('passwordOverlay')) {
+                closeVideoPasswordModal();
+            }
+        });
     </script>
 </body>
 </html>
