@@ -69,7 +69,7 @@
             border-radius: 20px;
             position: relative;
             z-index: 1;
-            text-align: center;  /* 所有文字居中 */
+            text-align: center;
         }
 
         /* 左上角登录入口 */
@@ -116,14 +116,14 @@
             color: white;
             text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
             margin-bottom: 30px;
-            text-align: center;  /* 标题居中 */
+            text-align: center;
         }
         
         p {
             color: white;
             font-size:14px;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-            text-align: center;  /* 段落文字居中 */
+            text-align: center;
         }
         
         .app-buttons, .video-buttons {
@@ -131,7 +131,6 @@
             flex-direction: column;
             gap: 15px;
             margin-bottom: 15px;
-            text-align: center;  /* 按钮容器文字居中 */
         }
 
         /* 视频播放器 */
@@ -141,7 +140,7 @@
             background: rgba(0, 0, 0, 0.6);
             border-radius: 16px;
             padding: 10px;
-            text-align: center;  /* 视频容器文字居中 */
+            text-align: center;
         }
         
         .video-container.show {
@@ -166,7 +165,7 @@
             margin: 10px 0 5px;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
             font-size: 16px;
-            text-align: center;  /* 视频标题居中 */
+            text-align: center;
         }
         
         .close-video {
@@ -214,7 +213,7 @@
             border: 1px solid rgba(255,255,255,0.15);
             transform: scale(0.9);
             transition: transform 0.3s ease;
-            text-align: center;  /* 密码框文字居中 */
+            text-align: center;
         }
 
         .password-overlay.active .password-box {
@@ -496,6 +495,12 @@
         .hidden {
             display: none;
         }
+
+        .loading {
+            color: white;
+            text-align: center;
+            padding: 50px;
+        }
     </style>
 </head>
 <body>
@@ -508,7 +513,7 @@
     <!-- 左上角登录入口 -->
     <div class="login-entrance" onclick="showLoginModal()">🔐 登录</div>
 
-    <!-- 登录弹窗 (初始隐藏) -->
+    <!-- 登录弹窗 -->
     <div id="loginOverlay" class="login-overlay">
         <div class="login-box">
             <h2>管理员登录</h2>
@@ -519,46 +524,52 @@
         </div>
     </div>
 
-    <!-- 前台界面 (默认显示) -->
+    <!-- 前台界面 -->
     <div id="frontendContainer" class="container">
-        <h2>柠檬茶提供<br>请选择下载或观看视频</h2>
-        
-        <div class="app-buttons" id="appButtons"></div>
-        <div class="video-buttons" id="videoButtons"></div>
-        
-        <!-- 视频播放区域 -->
-        <div id="videoContainer" class="video-container">
-            <div class="video-title" id="videoTitle">正在播放</div>
-            <div id="playerContainer" style="width:100%; height:300px; border-radius:12px;"></div>
-            <button class="close-video" onclick="closeVideo()">关闭视频</button>
+        <div id="loadingMessage" class="loading">加载配置中...</div>
+        <div id="mainContent" style="display: none;">
+            <h2>柠檬茶提供<br>请选择下载或观看视频</h2>
+            
+            <div class="app-buttons" id="appButtons"></div>
+            <div class="video-buttons" id="videoButtons"></div>
+            
+            <!-- 视频播放区域 -->
+            <div id="videoContainer" class="video-container">
+                <div class="video-title" id="videoTitle">正在播放</div>
+                <div id="playerContainer" style="width:100%; height:300px; border-radius:12px;"></div>
+                <button class="close-video" onclick="closeVideo()">关闭视频</button>
+            </div>
+            
+            <p>点击按钮开始下载或观看视频</p>
         </div>
-        
-        <p>点击按钮开始下载或观看视频</p>
     </div>
 
-    <!-- 后台界面 (初始隐藏) -->
+    <!-- 后台界面 -->
     <div id="adminContainer" class="admin-container hidden">
         <div class="admin-header">
             <h1>🍋 柠檬茶 · 后台管理 <span>管理员</span></h1>
             <button class="logout-btn" onclick="logout()">退出后台</button>
         </div>
 
-        <h2>🔐 视频通用密码</h2>
-        <div style="margin-bottom:20px;">
-            <input type="text" id="adminGlobalPassword" placeholder="例如 123456" style="width:200px; padding:12px; border-radius:40px; border:1px solid #d0d7de;">
-        </div>
+        <div id="adminLoading" class="loading" style="color:#000;">加载中...</div>
+        <div id="adminContent" style="display: none;">
+            <h2>🔐 视频通用密码</h2>
+            <div style="margin-bottom:20px;">
+                <input type="text" id="adminGlobalPassword" placeholder="例如 123456" style="width:200px; padding:12px; border-radius:40px; border:1px solid #d0d7de;">
+            </div>
 
-        <h2>📲 App 下载按钮</h2>
-        <div id="appButtonsAdmin" class="card-grid"></div>
-        <button class="btn-primary" onclick="addAppButton()" style="margin-top:15px;">➕ 新增下载按钮</button>
+            <h2>📲 App 下载按钮</h2>
+            <div id="appButtonsAdmin" class="card-grid"></div>
+            <button class="btn-primary" onclick="addAppButton()" style="margin-top:15px;">➕ 新增下载按钮</button>
 
-        <h2 style="margin-top:40px;">🎬 视频按钮</h2>
-        <div id="videoButtonsAdmin"></div>
-        <button class="btn-primary" onclick="addVideoButton()">➕ 新增视频按钮</button>
+            <h2 style="margin-top:40px;">🎬 视频按钮</h2>
+            <div id="videoButtonsAdmin"></div>
+            <button class="btn-primary" onclick="addVideoButton()">➕ 新增视频按钮</button>
 
-        <div class="publish-bar">
-            <div style="flex:1;"><strong>📤 保存配置</strong> <span style="color:#666; margin-left:15px;">修改后点击保存，所有设备立即生效</span></div>
-            <button class="btn-success" onclick="saveConfig()">💾 保存配置</button>
+            <div class="publish-bar">
+                <div style="flex:1;"><strong>📤 保存配置</strong> <span style="color:#666; margin-left:15px;">点击按钮直接跳转到 Gist 编辑页面</span></div>
+                <button class="btn-success" onclick="openGistEdit()">✏️ 前往 Gist 修改</button>
+            </div>
         </div>
     </div>
 
@@ -576,18 +587,12 @@
     </div>
 
     <script>
-        // ========== 配置数据 ==========
-        let config = {
-            globalPassword: '123456',
-            appButtons: [
-                { label: '防止息屏', url: 'https://play.google.com/store/apps/details?id=com.doublep.wakey', color: '#FFD447' },
-                { label: 'AAS', url: 'https://my5353.com/app2', color: '#007AFF' }
-            ],
-            videoButtons: [
-                { label: 'SUKISU教程', platform: 'google-drive', fileId: '1clTYzm2fLepJZ8N3Ibs_mcd8zD_DsRSB', youtubeUrl: '' },
-                { label: '第二个视频', platform: 'youtube', fileId: '', youtubeUrl: 'dQw4w9WgXcQ' }
-            ]
-        };
+        // ========== 配置 ==========
+        // ⚠️ 重要：改成你的 Gist Raw 链接（去掉版本号）
+        const GIST_URL = 'https://gist.githubusercontent.com/lemontealg/0f92da20b392ee53b27754ba06306566/raw/config.json';
+        
+        // Gist 编辑页面链接
+        const GIST_EDIT_URL = 'https://gist.github.com/lemontealg/0f92da20b392ee53b27754ba06306566/edit';
 
         // ========== 登录凭证 ==========
         const ADMIN_CREDENTIALS = {
@@ -595,20 +600,13 @@
             password: '128128'
         };
 
-        // 检查是否已登录 (使用session，关闭标签页就失效)
+        let config = null;
         let isAdmin = sessionStorage.getItem('lemontea_admin') === 'true';
 
         // ========== 初始化 ==========
-        window.onload = function() {
-            // 加载保存的配置 - 从localStorage读取
-            const savedConfig = localStorage.getItem('lemontea_config');
-            if (savedConfig) {
-                try {
-                    config = JSON.parse(savedConfig);
-                } catch (e) {}
-            }
+        window.onload = async function() {
+            await loadConfig();
             
-            // 如果已登录，显示后台；否则显示前台
             if (isAdmin) {
                 document.getElementById('frontendContainer').classList.add('hidden');
                 document.getElementById('adminContainer').classList.remove('hidden');
@@ -620,10 +618,39 @@
             }
         };
 
+        // ========== 从 Gist 加载配置 ==========
+        async function loadConfig() {
+            try {
+                document.getElementById('loadingMessage').style.display = 'block';
+                document.getElementById('mainContent').style.display = 'none';
+                
+                const response = await fetch(GIST_URL + '?t=' + Date.now());
+                config = await response.json();
+                
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+            } catch (error) {
+                console.error('加载配置失败', error);
+                // 使用默认配置
+                config = {
+                    globalPassword: '123456',
+                    appButtons: [
+                        { label: '防止息屏', url: 'https://play.google.com/store/apps/details?id=com.doublep.wakey', color: '#FFD447' },
+                        { label: 'AAS', url: 'https://my5353.com/app2', color: '#007AFF' }
+                    ],
+                    videoButtons: [
+                        { label: 'SUKISU教程', platform: 'google-drive', fileId: '1clTYzm2fLepJZ8N3Ibs_mcd8zD_DsRSB', youtubeUrl: '' },
+                        { label: '第二个视频', platform: 'youtube', fileId: '', youtubeUrl: 'dQw4w9WgXcQ' }
+                    ]
+                };
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+            }
+        }
+
         // ========== 登录弹窗控制 ==========
         window.showLoginModal = function() {
             document.getElementById('loginOverlay').classList.add('active');
-            // 清空输入框
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
         };
@@ -632,7 +659,6 @@
             document.getElementById('loginOverlay').classList.remove('active');
         };
 
-        // 点击遮罩层关闭
         document.getElementById('loginOverlay').addEventListener('click', function(e) {
             if (e.target === document.getElementById('loginOverlay')) {
                 closeLoginModal();
@@ -667,10 +693,6 @@
 
         // ========== 渲染前台 ==========
         function renderFrontend() {
-            // 更新视频密码
-            window.videoGlobalPassword = config.globalPassword;
-            
-            // 构建 videoConfig
             window.videoConfig = {};
             config.videoButtons.forEach((v, idx) => {
                 let videoId = '';
@@ -695,7 +717,6 @@
                 };
             });
             
-            // 渲染App按钮
             const appDiv = document.getElementById('appButtons');
             appDiv.innerHTML = '';
             config.appButtons.forEach(btn => {
@@ -707,7 +728,6 @@
                 appDiv.appendChild(button);
             });
             
-            // 渲染视频按钮
             const videoDiv = document.getElementById('videoButtons');
             videoDiv.innerHTML = '';
             config.videoButtons.forEach((v, idx) => {
@@ -721,9 +741,11 @@
 
         // ========== 渲染后台 ==========
         function renderAdmin() {
+            document.getElementById('adminLoading').style.display = 'none';
+            document.getElementById('adminContent').style.display = 'block';
+            
             document.getElementById('adminGlobalPassword').value = config.globalPassword;
             
-            // 渲染App按钮管理
             const appAdmin = document.getElementById('appButtonsAdmin');
             appAdmin.innerHTML = '';
             config.appButtons.forEach((btn, idx) => {
@@ -744,7 +766,6 @@
                 appAdmin.appendChild(card);
             });
             
-            // 渲染视频按钮管理
             const videoAdmin = document.getElementById('videoButtonsAdmin');
             videoAdmin.innerHTML = '';
             config.videoButtons.forEach((v, idx) => {
@@ -801,33 +822,39 @@
             }
         };
 
-        window.saveConfig = function() {
-            // 读取全局密码
-            config.globalPassword = document.getElementById('adminGlobalPassword').value;
+        // ========== 跳转到 Gist 编辑 ==========
+        window.openGistEdit = function() {
+            // 收集当前表单的配置
+            const currentConfig = {
+                globalPassword: document.getElementById('adminGlobalPassword').value,
+                appButtons: config.appButtons.map((_, idx) => ({
+                    label: document.getElementById(`app_label_${idx}`)?.value || '按钮',
+                    url: document.getElementById(`app_url_${idx}`)?.value || 'https://',
+                    color: document.getElementById(`app_color_${idx}`)?.value || '#FFD447'
+                })),
+                videoButtons: config.videoButtons.map((_, idx) => {
+                    const platform = document.getElementById(`video_platform_${idx}`)?.value || 'google-drive';
+                    const inputVal = document.getElementById(`video_input_${idx}`)?.value || '';
+                    return {
+                        label: document.getElementById(`video_label_${idx}`)?.value || '视频',
+                        platform: platform,
+                        fileId: platform === 'google-drive' ? inputVal : '',
+                        youtubeUrl: platform === 'youtube' ? inputVal : ''
+                    };
+                })
+            };
             
-            // 读取App按钮
-            config.appButtons = config.appButtons.map((_, idx) => ({
-                label: document.getElementById(`app_label_${idx}`)?.value || '按钮',
-                url: document.getElementById(`app_url_${idx}`)?.value || 'https://',
-                color: document.getElementById(`app_color_${idx}`)?.value || '#FFD447'
-            }));
+            // 生成格式化的 JSON
+            const configStr = JSON.stringify(currentConfig, null, 2);
             
-            // 读取视频按钮
-            config.videoButtons = config.videoButtons.map((_, idx) => {
-                const platform = document.getElementById(`video_platform_${idx}`)?.value || 'google-drive';
-                const inputVal = document.getElementById(`video_input_${idx}`)?.value || '';
-                return {
-                    label: document.getElementById(`video_label_${idx}`)?.value || '视频',
-                    platform: platform,
-                    fileId: platform === 'google-drive' ? inputVal : '',
-                    youtubeUrl: platform === 'youtube' ? inputVal : ''
-                };
-            });
+            // 显示提示
+            alert('👉 步骤：\n1. 复制下面弹出的配置内容\n2. 点击确定后打开 Gist\n3. 粘贴覆盖原有内容\n4. 点击 Update 保存');
             
-            // 保存到localStorage - 所有设备访问同一个网址都会读取这个配置
-            localStorage.setItem('lemontea_config', JSON.stringify(config));
+            // 弹出配置内容让用户复制
+            prompt('复制这个配置 (Ctrl+C)，然后粘贴到 Gist 中', configStr);
             
-            alert('✅ 配置已保存！所有设备刷新后都会看到最新配置');
+            // 跳转到 Gist 编辑页面
+            window.open(GIST_EDIT_URL, '_blank');
         };
 
         // ========== 视频播放逻辑 ==========
@@ -902,7 +929,6 @@
             document.getElementById('videoContainer').classList.remove('show');
         };
 
-        // 点击密码弹窗遮罩层关闭
         document.getElementById('passwordOverlay').addEventListener('click', function(e) {
             if (e.target === document.getElementById('passwordOverlay')) {
                 closeVideoPasswordModal();
