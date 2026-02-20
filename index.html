@@ -69,6 +69,7 @@
             border-radius: 20px;
             position: relative;
             z-index: 1;
+            text-align: center;  /* 所有文字居中 */
         }
 
         /* 左上角登录入口 */
@@ -115,12 +116,14 @@
             color: white;
             text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
             margin-bottom: 30px;
+            text-align: center;  /* 标题居中 */
         }
         
         p {
             color: white;
             font-size:14px;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            text-align: center;  /* 段落文字居中 */
         }
         
         .app-buttons, .video-buttons {
@@ -128,6 +131,7 @@
             flex-direction: column;
             gap: 15px;
             margin-bottom: 15px;
+            text-align: center;  /* 按钮容器文字居中 */
         }
 
         /* 视频播放器 */
@@ -137,6 +141,7 @@
             background: rgba(0, 0, 0, 0.6);
             border-radius: 16px;
             padding: 10px;
+            text-align: center;  /* 视频容器文字居中 */
         }
         
         .video-container.show {
@@ -161,6 +166,7 @@
             margin: 10px 0 5px;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
             font-size: 16px;
+            text-align: center;  /* 视频标题居中 */
         }
         
         .close-video {
@@ -208,6 +214,7 @@
             border: 1px solid rgba(255,255,255,0.15);
             transform: scale(0.9);
             transition: transform 0.3s ease;
+            text-align: center;  /* 密码框文字居中 */
         }
 
         .password-overlay.active .password-box {
@@ -220,6 +227,7 @@
             margin-bottom: 20px;
             font-weight: 500;
             font-size: 22px;
+            text-align: center;
         }
 
         .password-box input {
@@ -267,6 +275,7 @@
             font-size: 13px;
             margin-top: 8px;
             min-height: 20px;
+            text-align: center;
         }
 
         /* ========== 后台管理样式 ========== */
@@ -465,6 +474,7 @@
             color: #1e1e2f;
             margin-bottom: 30px;
             border: none;
+            text-align: center;
         }
 
         .login-box input {
@@ -474,6 +484,7 @@
             border: 1px solid #d0d7de;
             border-radius: 40px;
             font-size: 16px;
+            text-align: center;
         }
 
         .login-box button {
@@ -510,7 +521,7 @@
 
     <!-- 前台界面 (默认显示) -->
     <div id="frontendContainer" class="container">
-        <h2>      柠檬茶提供<br>请选择下载或观看视频</h2>
+        <h2>柠檬茶提供<br>请选择下载或观看视频</h2>
         
         <div class="app-buttons" id="appButtons"></div>
         <div class="video-buttons" id="videoButtons"></div>
@@ -546,7 +557,7 @@
         <button class="btn-primary" onclick="addVideoButton()">➕ 新增视频按钮</button>
 
         <div class="publish-bar">
-            <div style="flex:1;"><strong>📤 保存配置</strong> <span style="color:#666; margin-left:15px;">修改后点击保存，前台立即生效</span></div>
+            <div style="flex:1;"><strong>📤 保存配置</strong> <span style="color:#666; margin-left:15px;">修改后点击保存，所有设备立即生效</span></div>
             <button class="btn-success" onclick="saveConfig()">💾 保存配置</button>
         </div>
     </div>
@@ -589,7 +600,7 @@
 
         // ========== 初始化 ==========
         window.onload = function() {
-            // 加载保存的配置
+            // 加载保存的配置 - 从localStorage读取
             const savedConfig = localStorage.getItem('lemontea_config');
             if (savedConfig) {
                 try {
@@ -813,10 +824,10 @@
                 };
             });
             
-            // 保存到localStorage
+            // 保存到localStorage - 所有设备访问同一个网址都会读取这个配置
             localStorage.setItem('lemontea_config', JSON.stringify(config));
             
-            alert('✅ 配置已保存！前台页面刷新后生效');
+            alert('✅ 配置已保存！所有设备刷新后都会看到最新配置');
         };
 
         // ========== 视频播放逻辑 ==========
