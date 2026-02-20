@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>柠檬茶 · 轻享版</title>
+    <title>柠檬茶 · 可配背景</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         /* ========== 全局样式 ========== */
@@ -42,15 +42,9 @@
             animation: backgroundFade 15s infinite;
         }
         
-        .bg-image:nth-child(1) {
-            background-image: url('https://i.ibb.co/wtRXTb3/16015528110706048.webp');
-            animation-delay: 0s;
-        }
-        
-        .bg-image:nth-child(2) {
-            background-image: url('https://i.ibb.co/4n9fmY2d/17281386694626688.webp');
-            animation-delay: 7.5s;
-        }
+        /* 动态背景通过style属性设置，不再用CSS固定 */
+        .bg-image:nth-child(1) { animation-delay: 0s; }
+        .bg-image:nth-child(2) { animation-delay: 7.5s; }
         
         @keyframes backgroundFade {
             0% { opacity: 0; }
@@ -498,6 +492,36 @@
             .video-grid { grid-template-columns: 1fr 2fr; }
         }
 
+        /* 背景图片专用设置卡片 */
+        .bg-settings {
+            background: #f8fafd;
+            border-radius: 24px;
+            padding: 22px 28px;
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            align-items: flex-end;
+        }
+        .bg-item {
+            flex: 1 1 250px;
+        }
+        .bg-item label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #334155;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .bg-item input {
+            width: 100%;
+            padding: 12px 18px;
+            border-radius: 40px;
+            border: 1px solid #d0d7de;
+            font-size: 14px;
+        }
+
         /* 登录弹窗 */
         .login-overlay {
             position: fixed;
@@ -587,10 +611,10 @@
     </style>
 </head>
 <body>
-    <!-- 背景图片容器 -->
+    <!-- 背景图片容器 (动态通过JS设置) -->
     <div class="background-container">
-        <div class="bg-image"></div>
-        <div class="bg-image"></div>
+        <div class="bg-image" id="bg1"></div>
+        <div class="bg-image" id="bg2"></div>
     </div>
 
     <!-- 左上角登录入口 -->
@@ -627,7 +651,7 @@
         </div>
     </div>
 
-    <!-- 后台界面 (优化后) -->
+    <!-- 后台界面 (优化后 + 背景管理) -->
     <div id="adminContainer" class="admin-container hidden">
         <div class="admin-header">
             <h1>🍋 柠檬茶 · 后台管理 <span>管理员</span></h1>
@@ -636,7 +660,22 @@
 
         <div id="adminLoading" class="loading" style="color:#1e293b;">加载中...</div>
         <div id="adminContent" style="display: none;">
-            <!-- 视频通用密码 优化卡片 -->
+            
+            <!-- 新增：背景图片设置卡片 -->
+            <h2>🖼️ 背景图片管理</h2>
+            <div class="bg-settings">
+                <div class="bg-item">
+                    <label>背景图 1 (第一张)</label>
+                    <input type="url" id="bgInput1" placeholder="https://...第一张图片URL" value="">
+                </div>
+                <div class="bg-item">
+                    <label>背景图 2 (第二张)</label>
+                    <input type="url" id="bgInput2" placeholder="https://...第二张图片URL" value="">
+                </div>
+                <button class="btn-primary" onclick="applyBackgroundPreview()" style="margin-bottom:0;">🔄 预览背景</button>
+                <span style="font-size:13px; color:#64748b;">保存Gist后永久生效</span>
+            </div>
+
             <h2>🔐 视频通用密码</h2>
             <div class="global-password-wrap">
                 <input type="text" id="adminGlobalPassword" placeholder="例如 123456 (留空则无需密码)" value="">
@@ -684,8 +723,23 @@
         let config = null;
         let isAdmin = sessionStorage.getItem('lemontea_admin') === 'true';
 
+        // 初始化背景 (从config读取)
+        function updateBackgroundFromConfig() {
+            const bg1 = document.getElementById('bg1');
+            const bg2 = document.getElementById('bg2');
+            if (config && config.backgrounds) {
+                bg1.style.backgroundImage = `url('${config.backgrounds[0] || 'https://i.ibb.co/wtRXTb3/16015528110706048.webp'}')`;
+                bg2.style.backgroundImage = `url('${config.backgrounds[1] || 'https://i.ibb.co/4n9fmY2d/17281386694626688.webp'}')`;
+            } else {
+                // 默认fallback
+                bg1.style.backgroundImage = "url('https://i.ibb.co/wtRXTb3/16015528110706048.webp')";
+                bg2.style.backgroundImage = "url('https://i.ibb.co/4n9fmY2d/17281386694626688.webp')";
+            }
+        }
+
         window.onload = async function() {
             await loadConfig();
+            updateBackgroundFromConfig();   // 应用背景
             
             if (isAdmin) {
                 document.getElementById('frontendContainer').classList.add('hidden');
@@ -712,6 +766,10 @@
                 console.error('加载配置失败，使用默认配置', error);
                 config = {
                     globalPassword: '123456',
+                    backgrounds: [
+                        'https://i.ibb.co/wtRXTb3/16015528110706048.webp',
+                        'https://i.ibb.co/4n9fmY2d/17281386694626688.webp'
+                    ],
                     appButtons: [
                         { label: '防止息屏', url: 'https://play.google.com/store/apps/details?id=com.doublep.wakey', color: '#FFD447' },
                         { label: 'AAS', url: 'https://my5353.com/app2', color: '#007AFF' }
@@ -765,6 +823,8 @@
             document.getElementById('adminContainer').classList.add('hidden');
             document.getElementById('frontendContainer').classList.remove('hidden');
             renderFrontend();
+            // 退出时背景恢复config中的设置
+            updateBackgroundFromConfig();
         };
 
         // ========== 渲染前台 ==========
@@ -815,10 +875,19 @@
             });
         }
 
-        // ========== 渲染后台 (优化视觉 + 完整数据绑定) ==========
+        // ========== 渲染后台 (包含背景字段) ==========
         function renderAdmin() {
             document.getElementById('adminLoading').style.display = 'none';
             document.getElementById('adminContent').style.display = 'block';
+            
+            // 背景输入框填充
+            if (config.backgrounds && config.backgrounds.length >= 2) {
+                document.getElementById('bgInput1').value = config.backgrounds[0] || '';
+                document.getElementById('bgInput2').value = config.backgrounds[1] || '';
+            } else {
+                document.getElementById('bgInput1').value = 'https://i.ibb.co/wtRXTb3/16015528110706048.webp';
+                document.getElementById('bgInput2').value = 'https://i.ibb.co/4n9fmY2d/17281386694626688.webp';
+            }
             
             document.getElementById('adminGlobalPassword').value = config.globalPassword || '';
             
@@ -843,7 +912,7 @@
                 appAdmin.appendChild(card);
             });
             
-            // 视频按钮管理 (优化卡片布局)
+            // 视频按钮管理 
             const videoAdmin = document.getElementById('videoButtonsAdmin');
             videoAdmin.innerHTML = '';
             config.videoButtons.forEach((v, idx) => {
@@ -873,6 +942,14 @@
             });
         }
 
+        // 预览背景 (临时生效，不保存到config)
+        window.applyBackgroundPreview = function() {
+            const url1 = document.getElementById('bgInput1').value.trim();
+            const url2 = document.getElementById('bgInput2').value.trim();
+            if (url1) document.getElementById('bg1').style.backgroundImage = `url('${url1}')`;
+            if (url2) document.getElementById('bg2').style.backgroundImage = `url('${url2}')`;
+        };
+
         // ========== 后台操作 ==========
         window.addAppButton = function() {
             config.appButtons.push({ label: '新下载', url: 'https://', color: '#FFD447' });
@@ -898,9 +975,14 @@
             }
         };
 
-        // ========== 跳转到 Gist 编辑 (收集当前配置) ==========
+        // ========== 跳转到 Gist 编辑 (收集当前配置 + 背景) ==========
         window.openGistEdit = function() {
+            // 收集背景
+            const bg1 = document.getElementById('bgInput1').value.trim() || 'https://i.ibb.co/wtRXTb3/16015528110706048.webp';
+            const bg2 = document.getElementById('bgInput2').value.trim() || 'https://i.ibb.co/4n9fmY2d/17281386694626688.webp';
+            
             const currentConfig = {
+                backgrounds: [bg1, bg2],
                 globalPassword: document.getElementById('adminGlobalPassword').value,
                 appButtons: config.appButtons.map((_, idx) => ({
                     label: document.getElementById(`app_label_${idx}`)?.value || '按钮',
@@ -920,7 +1002,7 @@
             };
             
             const configStr = JSON.stringify(currentConfig, null, 2);
-            alert('👉 步骤：\n1. 复制弹出的配置内容\n2. 点击确定后打开 Gist\n3. 粘贴覆盖原有内容\n4. 点击 Update 保存');
+            alert('👉 步骤：\n1. 复制弹出的配置内容 (包含背景)\n2. 点击确定后打开 Gist\n3. 粘贴覆盖原有内容\n4. 点击 Update 保存');
             prompt('复制这个配置 (Ctrl+C)，然后粘贴到 Gist 中', configStr);
             window.open(GIST_EDIT_URL, '_blank');
         };
