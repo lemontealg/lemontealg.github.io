@@ -608,6 +608,69 @@
             border: 1px solid #dde3e9;
             font-size: 15px;
         }
+
+        /* 全屏网页容器 */
+        .fullscreen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 4000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .fullscreen-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .fullscreen-header {
+            background-color: #FFD447;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #1e1e2f;
+            font-weight: bold;
+        }
+        
+        .fullscreen-title {
+            font-size: 18px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 70%;
+        }
+        
+        .fullscreen-close {
+            background: rgba(0, 0, 0, 0.1);
+            border: none;
+            color: #1e1e2f;
+            font-size: 16px;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            width: auto;
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .fullscreen-close:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .fullscreen-frame {
+            width: 100%;
+            flex: 1;
+            border: none;
+            background: white;
+        }
     </style>
 </head>
 <body>
@@ -708,6 +771,15 @@
                 <button class="btn-confirm" onclick="confirmVideoPassword()">确认</button>
             </div>
         </div>
+    </div>
+
+    <!-- 全屏网页容器 -->
+    <div id="fullscreenOverlay" class="fullscreen-overlay">
+        <div class="fullscreen-header">
+            <span class="fullscreen-title" id="fullscreenTitle">加载中...</span>
+            <button class="fullscreen-close" onclick="closeFullscreen()">返回</button>
+        </div>
+        <iframe id="fullscreenFrame" class="fullscreen-frame" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads allow-top-navigation"></iframe>
     </div>
 
     <script>
@@ -827,7 +899,34 @@
             updateBackgroundFromConfig();
         };
 
-        // ========== 渲染前台 ==========
+        // ========== 全屏网页控制 ==========
+        window.openFullscreen = function(url, title) {
+            // 关闭视频播放器（如果开着）
+            closeVideo();
+            
+            const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+            const fullscreenFrame = document.getElementById('fullscreenFrame');
+            const fullscreenTitle = document.getElementById('fullscreenTitle');
+            
+            fullscreenTitle.textContent = title || '加载中...';
+            fullscreenFrame.src = url;
+            fullscreenOverlay.classList.add('active');
+            
+            // 防止body滚动
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeFullscreen = function() {
+            const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+            const fullscreenFrame = document.getElementById('fullscreenFrame');
+            fullscreenFrame.src = 'about:blank';
+            fullscreenOverlay.classList.remove('active');
+            
+            // 恢复body滚动
+            document.body.style.overflow = '';
+        };
+
+        // ========== 渲染前台 (修改了APP按钮点击事件) ==========
         function renderFrontend() {
             window.videoConfig = {};
             config.videoButtons.forEach((v, idx) => {
@@ -860,7 +959,8 @@
                 button.style.backgroundColor = btn.color || '#FFD447';
                 button.style.color = (btn.color || '').toUpperCase() === '#FFD447' ? '#333' : 'white';
                 button.textContent = btn.label || '下载';
-                button.onclick = () => window.location.href = btn.url;
+                // 修改：在全屏打开，而不是新窗口
+                button.onclick = () => openFullscreen(btn.url, btn.label || '下载');
                 appDiv.appendChild(button);
             });
             
@@ -1013,6 +1113,9 @@
                 alert('视频尚未配置ID，请管理员在后台设置');
                 return;
             }
+            // 关闭全屏网页（如果开着）
+            closeFullscreen();
+            
             pendingVideoKey = videoKey;
             document.getElementById('videoPasswordInput').value = '';
             document.getElementById('videoPasswordError').textContent = '';
