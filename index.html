@@ -320,7 +320,7 @@
 
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 24px;
         }
 
@@ -671,6 +671,26 @@
             border: none;
             background: white;
         }
+
+        /* 打开方式标签 */
+        .open-type-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .open-type-fullscreen {
+            background: #FFD447;
+            color: #1e1e2f;
+        }
+        
+        .open-type-newtab {
+            background: #e2e8f0;
+            color: #334155;
+        }
     </style>
 </head>
 <body>
@@ -714,7 +734,7 @@
         </div>
     </div>
 
-    <!-- 后台界面 (优化后 + 背景管理) - 已修改为可删除到0个按钮 -->
+    <!-- 后台界面 (优化后 + 背景管理) - 已修改为可删除到0个按钮 + 打开方式选择 -->
     <div id="adminContainer" class="admin-container hidden">
         <div class="admin-header">
             <h1>🍋 柠檬茶 · 后台管理 <span>管理员</span></h1>
@@ -745,7 +765,7 @@
                 <span style="color:#4b5565; font-size:14px;">修改后需手动保存至Gist</span>
             </div>
 
-            <h2>📲 App 下载按钮 <span style="font-size:14px; font-weight:400; color:#666; margin-left:8px;">可自由增删颜色</span></h2>
+            <h2>📲 App 下载按钮 <span style="font-size:14px; font-weight:400; color:#666; margin-left:8px;">可选择打开方式</span></h2>
             <div id="appButtonsAdmin" class="card-grid"></div>
             <button class="btn-primary" onclick="addAppButton()" style="margin-top:20px;">➕ 新增下载按钮</button>
 
@@ -777,7 +797,7 @@
     <div id="fullscreenOverlay" class="fullscreen-overlay">
         <div class="fullscreen-header">
             <span class="fullscreen-title" id="fullscreenTitle">加载中...</span>
-            <button class="fullscreen-close" onclick="closeFullscreen()">返回</button>
+            <button class="fullscreen-close" onclick="closeFullscreen()">关闭</button>
         </div>
         <iframe id="fullscreenFrame" class="fullscreen-frame" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads allow-top-navigation"></iframe>
     </div>
@@ -843,8 +863,8 @@
                         'https://i.ibb.co/4n9fmY2d/17281386694626688.webp'
                     ],
                     appButtons: [
-                        { label: '防止息屏', url: 'https://play.google.com/store/apps/details?id=com.doublep.wakey', color: '#FFD447' },
-                        { label: 'AAS', url: 'https://my5353.com/app2', color: '#007AFF' }
+                        { label: '防止息屏', url: 'https://play.google.com/store/apps/details?id=com.doublep.wakey', color: '#FFD447', openType: 'fullscreen' },
+                        { label: 'AAS', url: 'https://my5353.com/app2', color: '#007AFF', openType: 'newtab' }
                     ],
                     videoButtons: [
                         { label: 'SUKISU教程', platform: 'google-drive', fileId: '1clTYzm2fLepJZ8N3Ibs_mcd8zD_DsRSB', youtubeUrl: '' },
@@ -926,7 +946,24 @@
             document.body.style.overflow = '';
         };
 
-        // ========== 渲染前台 (修改了APP按钮点击事件) ==========
+        // ========== 新窗口打开 ==========
+        window.openNewTab = function(url) {
+            window.open(url, '_blank');
+        };
+
+        // ========== 根据打开方式处理点击 ==========
+        window.handleAppButtonClick = function(btn) {
+            // 关闭视频播放器（如果开着）
+            closeVideo();
+            
+            if (btn.openType === 'fullscreen') {
+                openFullscreen(btn.url, btn.label || '下载');
+            } else {
+                openNewTab(btn.url);
+            }
+        };
+
+        // ========== 渲染前台 ==========
         function renderFrontend() {
             window.videoConfig = {};
             config.videoButtons.forEach((v, idx) => {
@@ -959,8 +996,15 @@
                 button.style.backgroundColor = btn.color || '#FFD447';
                 button.style.color = (btn.color || '').toUpperCase() === '#FFD447' ? '#333' : 'white';
                 button.textContent = btn.label || '下载';
-                // 修改：在全屏打开，而不是新窗口
-                button.onclick = () => openFullscreen(btn.url, btn.label || '下载');
+                
+                // 添加一个小标记显示打开方式（可选）
+                if (btn.openType === 'fullscreen') {
+                    button.textContent += ' 📱';
+                } else {
+                    button.textContent += ' 🔗';
+                }
+                
+                button.onclick = () => handleAppButtonClick(btn);
                 appDiv.appendChild(button);
             });
             
@@ -975,7 +1019,7 @@
             });
         }
 
-        // ========== 渲染后台 (包含背景字段) ==========
+        // ========== 渲染后台 (包含背景字段 + 打开方式选择) ==========
         function renderAdmin() {
             document.getElementById('adminLoading').style.display = 'none';
             document.getElementById('adminContent').style.display = 'block';
@@ -991,7 +1035,7 @@
             
             document.getElementById('adminGlobalPassword').value = config.globalPassword || '';
             
-            // App 按钮卡片
+            // App 按钮卡片 - 添加打开方式选择
             const appAdmin = document.getElementById('appButtonsAdmin');
             appAdmin.innerHTML = '';
             config.appButtons.forEach((btn, idx) => {
@@ -1005,6 +1049,11 @@
                     <input type="url" id="app_url_${idx}" value="${(btn.url || '').replace(/"/g, '&quot;')}">
                     <label>背景颜色 <span style="font-weight:400; color:#666;">(如 #FFD447)</span></label>
                     <input type="text" id="app_color_${idx}" value="${btn.color || '#FFD447'}">
+                    <label>打开方式</label>
+                    <select id="app_openType_${idx}">
+                        <option value="fullscreen" ${(btn.openType || 'fullscreen') === 'fullscreen' ? 'selected' : ''}>📱 全屏打开 (在当前页面)</option>
+                        <option value="newtab" ${(btn.openType || 'fullscreen') === 'newtab' ? 'selected' : ''}>🔗 新窗口打开 (新标签页)</option>
+                    </select>
                     <div style="display: flex; gap: 8px; justify-content:flex-end; margin-top:8px;">
                         <button class="btn-danger" onclick="removeAppButton(${idx})">🗑️ 删除</button>
                     </div>
@@ -1052,12 +1101,16 @@
 
         // ========== 后台操作 (已修改为可删除到0) ==========
         window.addAppButton = function() {
-            config.appButtons.push({ label: '新下载', url: 'https://', color: '#FFD447' });
+            config.appButtons.push({ 
+                label: '新下载', 
+                url: 'https://', 
+                color: '#FFD447',
+                openType: 'fullscreen'  // 默认全屏打开
+            });
             renderAdmin();
         };
 
         window.removeAppButton = function(index) {
-            // 已移除 length > 1 的限制，可以删除到0个
             config.appButtons.splice(index, 1);
             renderAdmin();
         };
@@ -1068,12 +1121,11 @@
         };
 
         window.removeVideoButton = function(index) {
-            // 已移除 length > 1 的限制，可以删除到0个
             config.videoButtons.splice(index, 1);
             renderAdmin();
         };
 
-        // ========== 跳转到 Gist 编辑 (收集当前配置 + 背景) ==========
+        // ========== 跳转到 Gist 编辑 (收集当前配置 + 背景 + 打开方式) ==========
         window.openGistEdit = function() {
             // 收集背景
             const bg1 = document.getElementById('bgInput1').value.trim() || 'https://i.ibb.co/wtRXTb3/16015528110706048.webp';
@@ -1085,7 +1137,8 @@
                 appButtons: config.appButtons.map((_, idx) => ({
                     label: document.getElementById(`app_label_${idx}`)?.value || '按钮',
                     url: document.getElementById(`app_url_${idx}`)?.value || 'https://',
-                    color: document.getElementById(`app_color_${idx}`)?.value || '#FFD447'
+                    color: document.getElementById(`app_color_${idx}`)?.value || '#FFD447',
+                    openType: document.getElementById(`app_openType_${idx}`)?.value || 'fullscreen'
                 })),
                 videoButtons: config.videoButtons.map((_, idx) => {
                     const platform = document.getElementById(`video_platform_${idx}`)?.value || 'google-drive';
