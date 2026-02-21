@@ -651,7 +651,7 @@
         </div>
     </div>
 
-    <!-- 后台界面 (优化后 + 背景管理) -->
+    <!-- 后台界面 (优化后 + 背景管理) - 已修改为可删除到0个按钮 -->
     <div id="adminContainer" class="admin-container hidden">
         <div class="admin-header">
             <h1>🍋 柠檬茶 · 后台管理 <span>管理员</span></h1>
@@ -906,7 +906,7 @@
                     <label>背景颜色 <span style="font-weight:400; color:#666;">(如 #FFD447)</span></label>
                     <input type="text" id="app_color_${idx}" value="${btn.color || '#FFD447'}">
                     <div style="display: flex; gap: 8px; justify-content:flex-end; margin-top:8px;">
-                        ${config.appButtons.length > 1 ? `<button class="btn-danger" onclick="removeAppButton(${idx})">🗑️ 删除</button>` : ''}
+                        <button class="btn-danger" onclick="removeAppButton(${idx})">🗑️ 删除</button>
                     </div>
                 `;
                 appAdmin.appendChild(card);
@@ -921,7 +921,7 @@
                 div.innerHTML = `
                     <div class="flex-row">
                         <span class="badge">🎬 视频 ${idx+1}</span>
-                        ${config.videoButtons.length > 1 ? `<button class="btn-danger" onclick="removeVideoButton(${idx})">🗑️ 移除</button>` : ''}
+                        <button class="btn-danger" onclick="removeVideoButton(${idx})">🗑️ 移除</button>
                     </div>
                     <div class="video-grid">
                         <label>按钮名称</label>
@@ -950,17 +950,16 @@
             if (url2) document.getElementById('bg2').style.backgroundImage = `url('${url2}')`;
         };
 
-        // ========== 后台操作 ==========
+        // ========== 后台操作 (已修改为可删除到0) ==========
         window.addAppButton = function() {
             config.appButtons.push({ label: '新下载', url: 'https://', color: '#FFD447' });
             renderAdmin();
         };
 
         window.removeAppButton = function(index) {
-            if (config.appButtons.length > 1) {
-                config.appButtons.splice(index, 1);
-                renderAdmin();
-            }
+            // 已移除 length > 1 的限制，可以删除到0个
+            config.appButtons.splice(index, 1);
+            renderAdmin();
         };
 
         window.addVideoButton = function() {
@@ -969,10 +968,9 @@
         };
 
         window.removeVideoButton = function(index) {
-            if (config.videoButtons.length > 1) {
-                config.videoButtons.splice(index, 1);
-                renderAdmin();
-            }
+            // 已移除 length > 1 的限制，可以删除到0个
+            config.videoButtons.splice(index, 1);
+            renderAdmin();
         };
 
         // ========== 跳转到 Gist 编辑 (收集当前配置 + 背景) ==========
