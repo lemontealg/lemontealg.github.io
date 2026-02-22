@@ -79,6 +79,34 @@
             background: rgba(0, 0, 0, 0.4);
         }
 
+        /* 右上角刷新按钮 */
+        .refresh-button {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 100;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(2px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .refresh-button:hover {
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .refresh-button i {
+            font-size: 16px;
+        }
+
         button {
             font-size: 18px;
             padding: 15px;
@@ -765,6 +793,11 @@
     <!-- 左上角登录入口 -->
     <div class="login-entrance" onclick="showLoginModal()">🔐 登录</div>
 
+    <!-- 右上角刷新按钮 -->
+    <div class="refresh-button" onclick="refreshPage()">
+        <i>🔄</i> 刷新
+    </div>
+
     <!-- 登录弹窗 -->
     <div id="loginOverlay" class="login-overlay">
         <div class="login-box">
@@ -780,7 +813,7 @@
     <div id="frontendContainer" class="container">
         <div id="loadingMessage" class="loading">加载配置中...</div>
         <div id="mainContent" style="display: none;">
-            <h2>请选择下载或观看视频</h2>
+            <h2>🍋 柠檬茶提供<br>请选择下载或观看视频</h2>
             
             <div class="app-buttons" id="appButtons"></div>
             <div class="video-buttons" id="videoButtons"></div>
@@ -892,6 +925,11 @@
         let config = null;
         let isAdmin = sessionStorage.getItem('lemontea_admin') === 'true';
         let bgTimer = null;  // 背景切换定时器
+
+        // ========== 刷新页面函数 ==========
+        window.refreshPage = function() {
+            location.reload();
+        };
 
         // 停止背景切换定时器
         function stopBackgroundTimer() {
