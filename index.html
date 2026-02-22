@@ -39,19 +39,11 @@
             background-position: center;
             background-repeat: no-repeat;
             opacity: 0;
-            animation: backgroundFade var(--bg-animation-duration, 15s) infinite;
+            transition: opacity 0s;  /* 瞬间切换，无过渡 */
         }
         
-        /* 动态背景通过style属性设置，不再用CSS固定 */
-        .bg-image:nth-child(1) { animation-delay: 0s; }
-        .bg-image:nth-child(2) { animation-delay: calc(var(--bg-animation-duration, 15s) / 2); }
-        
-        @keyframes backgroundFade {
-            0% { opacity: 0; }
-            15% { opacity: 1; }
-            35% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 0; }
+        .bg-image.active {
+            opacity: 1;
         }
 
         /* ========== 前台样式 ========== */
@@ -832,11 +824,11 @@
                 <div class="bg-timer-settings">
                     <div class="timer-item">
                         <label>⏱️ 背景切换间隔 (秒)</label>
-                        <input type="number" id="bgInterval" min="3" max="60" value="15" step="1" onchange="updateBackgroundTimePreview()">
+                        <input type="number" id="bgInterval" min="1" max="60" value="5" step="1" onchange="updateBackgroundTimePreview()">
                     </div>
                     <div class="timer-preview">
                         <span>当前设置：</span>
-                        <span class="timer-value" id="bgIntervalDisplay">15</span>
+                        <span class="timer-value" id="bgIntervalDisplay">5</span>
                         <span>秒切换一次</span>
                     </div>
                     <button class="btn-primary" onclick="applyBackgroundSettings()" style="margin-bottom:0;">🔄 应用背景设置</button>
@@ -899,32 +891,71 @@
 
         let config = null;
         let isAdmin = sessionStorage.getItem('lemontea_admin') === 'true';
+        let bgTimer = null;  // 背景切换定时器
+
+        // 停止背景切换定时器
+        function stopBackgroundTimer() {
+            if (bgTimer) {
+                clearInterval(bgTimer);
+                bgTimer = null;
+            }
+        }
+
+        // 启动背景切换定时器
+        function startBackgroundTimer() {
+            stopBackgroundTimer();  // 先停止旧的
+            
+            const bgInterval = config.bgInterval || 5;
+            if (bgInterval < 1) return;
+            
+            let currentBg = 1;  // 当前显示的是背景1
+            
+            bgTimer = setInterval(() => {
+                const bg1 = document.getElementById('bg1');
+                const bg2 = document.getElementById('bg2');
+                
+                if (currentBg === 1) {
+                    // 切换到背景2
+                    bg1.classList.remove('active');
+                    bg2.classList.add('active');
+                    currentBg = 2;
+                } else {
+                    // 切换到背景1
+                    bg2.classList.remove('active');
+                    bg1.classList.add('active');
+                    currentBg = 1;
+                }
+            }, bgInterval * 1000);
+        }
 
         // 应用背景图片和时间设置
         function applyBackgroundSettings() {
             const bg1 = document.getElementById('bg1');
             const bg2 = document.getElementById('bg2');
-            const bgInterval = document.getElementById('bgInterval').value;
+            const url1 = document.getElementById('bgInput1').value.trim();
+            const url2 = document.getElementById('bgInput2').value.trim();
+            const bgInterval = parseInt(document.getElementById('bgInterval').value) || 5;
             
             // 设置背景图片
-            if (config && config.backgrounds) {
-                bg1.style.backgroundImage = `url('${config.backgrounds[0] || 'https://i.ibb.co/wtRXTb3/16015528110706048.webp'}')`;
-                bg2.style.backgroundImage = `url('${config.backgrounds[1] || 'https://i.ibb.co/4n9fmY2d/17281386694626688.webp'}')`;
+            if (url1) {
+                bg1.style.backgroundImage = `url('${url1}')`;
+            }
+            if (url2) {
+                bg2.style.backgroundImage = `url('${url2}')`;
             }
             
-            // 设置动画时间
-            if (bgInterval) {
-                const duration = parseInt(bgInterval) * 2; // 总动画周期是间隔的2倍
-                document.documentElement.style.setProperty('--bg-animation-duration', duration + 's');
-                
-                // 更新延迟时间
-                const style = document.createElement('style');
-                style.innerHTML = `
-                    .bg-image:nth-child(1) { animation-delay: 0s; }
-                    .bg-image:nth-child(2) { animation-delay: ${bgInterval}s; }
-                `;
-                document.head.appendChild(style);
+            // 确保第一张显示，第二张隐藏
+            bg1.classList.add('active');
+            bg2.classList.remove('active');
+            
+            // 更新config
+            if (config) {
+                config.backgrounds = [url1, url2];
+                config.bgInterval = bgInterval;
             }
+            
+            // 重启定时器
+            startBackgroundTimer();
         }
 
         // 更新背景时间预览
@@ -939,34 +970,20 @@
             const bg2 = document.getElementById('bg2');
             
             if (config && config.backgrounds) {
-                bg1.style.backgroundImage = `url('${config.backgrounds[0] || 'https://i.ibb.co/wtRXTb3/16015528110706048.webp'}')`;
-                bg2.style.backgroundImage = `url('${config.backgrounds[1] || 'https://i.ibb.co/4n9fmY2d/17281386694626688.webp'}')`;
+                if (config.backgrounds[0]) {
+                    bg1.style.backgroundImage = `url('${config.backgrounds[0]}')`;
+                }
+                if (config.backgrounds[1]) {
+                    bg2.style.backgroundImage = `url('${config.backgrounds[1]}')`;
+                }
             }
             
-            // 应用背景切换时间
-            if (config && config.bgInterval) {
-                document.getElementById('bgInterval').value = config.bgInterval;
-                document.getElementById('bgIntervalDisplay').textContent = config.bgInterval;
-                
-                const duration = parseInt(config.bgInterval) * 2;
-                document.documentElement.style.setProperty('--bg-animation-duration', duration + 's');
-                
-                const style = document.createElement('style');
-                style.innerHTML = `
-                    .bg-image:nth-child(1) { animation-delay: 0s; }
-                    .bg-image:nth-child(2) { animation-delay: ${config.bgInterval}s; }
-                `;
-                document.head.appendChild(style);
-            } else {
-                // 默认15秒
-                document.documentElement.style.setProperty('--bg-animation-duration', '30s');
-                const style = document.createElement('style');
-                style.innerHTML = `
-                    .bg-image:nth-child(1) { animation-delay: 0s; }
-                    .bg-image:nth-child(2) { animation-delay: 15s; }
-                `;
-                document.head.appendChild(style);
-            }
+            // 确保第一张显示，第二张隐藏
+            bg1.classList.add('active');
+            bg2.classList.remove('active');
+            
+            // 启动定时器
+            startBackgroundTimer();
         }
 
         window.onload = async function() {
@@ -998,7 +1015,7 @@
                 console.error('加载配置失败，使用默认配置', error);
                 config = {
                     globalPassword: '123456',
-                    bgInterval: 15,  // 默认15秒切换
+                    bgInterval: 5,  // 默认5秒切换
                     backgrounds: [
                         'https://i.ibb.co/wtRXTb3/16015528110706048.webp',
                         'https://i.ibb.co/4n9fmY2d/17281386694626688.webp'
@@ -1179,8 +1196,8 @@
                 document.getElementById('bgInterval').value = config.bgInterval;
                 document.getElementById('bgIntervalDisplay').textContent = config.bgInterval;
             } else {
-                document.getElementById('bgInterval').value = 15;
-                document.getElementById('bgIntervalDisplay').textContent = 15;
+                document.getElementById('bgInterval').value = 5;
+                document.getElementById('bgIntervalDisplay').textContent = 5;
             }
             
             document.getElementById('adminGlobalPassword').value = config.globalPassword || '';
@@ -1245,11 +1262,12 @@
         window.applyBackgroundSettings = function() {
             const url1 = document.getElementById('bgInput1').value.trim();
             const url2 = document.getElementById('bgInput2').value.trim();
-            const bgInterval = document.getElementById('bgInterval').value;
+            const bgInterval = parseInt(document.getElementById('bgInterval').value) || 5;
             
             // 临时更新config中的值
+            if (!config) config = {};
             config.backgrounds = [url1, url2];
-            config.bgInterval = parseInt(bgInterval);
+            config.bgInterval = bgInterval;
             
             // 应用背景
             updateBackgroundFromConfig();
@@ -1286,7 +1304,7 @@
             // 收集背景和时间
             const bg1 = document.getElementById('bgInput1').value.trim() || 'https://i.ibb.co/wtRXTb3/16015528110706048.webp';
             const bg2 = document.getElementById('bgInput2').value.trim() || 'https://i.ibb.co/4n9fmY2d/17281386694626688.webp';
-            const bgInterval = parseInt(document.getElementById('bgInterval').value) || 15;
+            const bgInterval = parseInt(document.getElementById('bgInterval').value) || 5;
             
             const currentConfig = {
                 bgInterval: bgInterval,
