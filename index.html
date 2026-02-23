@@ -780,24 +780,16 @@
             background: white;
         }
 
-        /* 刷新选项标签 */
-        .refresh-badge {
+        /* 点击刷新标签 */
+        .click-refresh-badge {
             display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
             font-weight: 600;
-            margin-left: 10px;
-        }
-        
-        .refresh-enabled {
-            background: #4CAF50;
-            color: white;
-        }
-        
-        .refresh-disabled {
-            background: #9e9e9e;
-            color: white;
+            margin-left: 8px;
+            background: #FFD447;
+            color: #1e1e2f;
         }
     </style>
 </head>
@@ -811,14 +803,9 @@
     <!-- 左上角登录入口 -->
     <div class="login-entrance" onclick="showLoginModal()">🔐 登录</div>
 
-    <!-- 右上角刷新按钮 -->
-    <div class="refresh-button" onclick="refreshAllContent()">
-        <i>🔄</i> 刷新内容
-    </div>
-
-    <!-- 定时刷新提示 -->
-    <div class="auto-refresh-tip" id="refreshTip">
-        ⏱️ 30分钟后自动刷新
+    <!-- 右上角手动刷新按钮 -->
+    <div class="refresh-button" onclick="manualRefresh()">
+        <i>🔄</i> 手动刷新
     </div>
 
     <!-- 登录弹窗 -->
@@ -892,7 +879,7 @@
                 </div>
             </div>
 
-            <h2>📲 App 下载按钮 <span style="font-size:14px; font-weight:400; color:#666; margin-left:8px;">可设置独立密码和刷新选项</span></h2>
+            <h2>📲 App 下载按钮 <span style="font-size:14px; font-weight:400; color:#666; margin-left:8px;">可设置独立密码和点击刷新</span></h2>
             <div id="appButtonsAdmin" class="card-grid"></div>
             <button class="btn-primary" onclick="addAppButton()" style="margin-top:20px;">➕ 新增下载按钮</button>
 
@@ -907,7 +894,7 @@
         </div>
     </div>
 
-    <!-- 通用密码弹窗（用于APP按钮） -->
+    <!-- APP密码弹窗 -->
     <div id="appPasswordOverlay" class="password-overlay">
         <div class="password-box">
             <h3 id="appPasswordTitle">🔐 请输入密码</h3>
@@ -921,7 +908,7 @@
         </div>
     </div>
 
-    <!-- 视频密码弹窗（保留原有） -->
+    <!-- 视频密码弹窗 -->
     <div id="videoPasswordOverlay" class="password-overlay">
         <div class="password-box">
             <h3>🔐 请输入视频密码</h3>
@@ -957,75 +944,164 @@
         let config = null;
         let isAdmin = sessionStorage.getItem('lemontea_admin') === 'true';
         let bgTimer = null;
-        let autoRefreshTimer = null;
-        let lastRefreshTime = Date.now();
 
-        // APP按钮密码相关
+        // APP按钮相关
         let pendingAppButton = null;  // 等待验证的APP按钮
 
-        // ========== 刷新所有内容 ==========
-        window.refreshAllContent = function() {
-            console.log('手动刷新所有内容...');
-            
-            loadConfig().then(() => {
-                if (!isAdmin) {
-                    renderFrontend();
-                }
-                
-                updateBackgroundFromConfig();
-                
-                // 刷新全屏iframe（如果开着且设置了需要刷新）
+        // ========== 手动刷新页面 ==========
+        window.manualRefresh = function() {
+            location.reload();
+        };
+
+        // ========== 刷新当前全屏iframe（如果需要） ==========
+        function refreshFullscreenIframe(button) {
+            return new Promise((resolve) => {
                 const fullscreenFrame = document.getElementById('fullscreenFrame');
-                if (fullscreenFrame && fullscreenFrame.src && fullscreenFrame.src !== 'about:blank') {
-                    // 检查当前打开的按钮是否需要刷新
-                    const currentTitle = document.getElementById('fullscreenTitle').textContent;
-                    const currentButton = config.appButtons.find(btn => btn.label === currentTitle.replace('加载中...', '').trim());
-                    
-                    if (currentButton && currentButton.autoRefresh) {
-                        const currentSrc = fullscreenFrame.src;
-                        fullscreenFrame.src = 'about:blank';
-                        setTimeout(() => {
-                            fullscreenFrame.src = currentSrc;
-                        }, 100);
-                    }
-                }
+                const fullscreenOverlay = document.getElementById('fullscreenOverlay');
                 
-                // 刷新视频播放器（如果开着）
+                // 如果全屏窗口是打开的，并且是同一个按钮，并且需要刷新
+                if (fullscreenOverlay.classList.contains('active') && 
+                    fullscreenFrame.src && 
+                    fullscreenFrame.src !== 'about:blank' &&
+                    button.needRefresh) {
+                    
+                    console.log(`刷新全屏内容: ${button.label}`);
+                    const currentSrc = fullscreenFrame.src;
+                    fullscreenFrame.src = 'about:blank';
+                    
+                    // 短暂延迟后重新加载
+                    setTimeout(() => {
+                        fullscreenFrame.src = currentSrc;
+                        resolve();
+                    }, 100);
+                } else {
+                    resolve();
+                }
+            });
+        }
+
+        // ========== 刷新视频播放器（如果需要） ==========
+        function refreshVideoPlayer(button) {
+            return new Promise((resolve) => {
+                const videoContainer = document.getElementById('videoContainer');
                 const playerContainer = document.getElementById('playerContainer');
-                if (playerContainer && playerContainer.children.length > 0) {
+                
+                // 如果视频正在播放，并且需要刷新
+                if (videoContainer.classList.contains('show') && 
+                    playerContainer.children.length > 0 &&
+                    button.needRefresh) {
+                    
+                    console.log(`刷新视频播放器`);
                     const videoKey = pendingVideoKey;
                     if (videoKey) {
+                        // 重新播放视频
                         performPlayVideo(videoKey);
                     }
                 }
-                
-                lastRefreshTime = Date.now();
-                startAutoRefresh();
+                resolve();
             });
+        }
+
+        // ========== 处理APP按钮点击（带密码验证和刷新选项） ==========
+        window.handleAppButtonClick = async function(btn) {
+            console.log('点击按钮:', btn.label, '需要刷新:', btn.needRefresh);
+            
+            // 先检查密码
+            if (btn.password && btn.password.trim() !== '') {
+                // 有密码，先保存按钮信息，等待密码验证
+                pendingAppButton = btn;
+                showAppPasswordModal(btn);
+                return;
+            }
+            
+            // 无密码，直接执行打开操作（可能先刷新）
+            await executeAppButtonOpen(btn);
         };
 
-        // ========== 启动30分钟自动刷新 ==========
-        function startAutoRefresh() {
-            const REFRESH_INTERVAL = 30 * 60 * 1000;
+        // ========== 执行APP按钮打开操作（带刷新） ==========
+        async function executeAppButtonOpen(btn) {
+            // 关闭视频播放器
+            closeVideo();
             
-            if (autoRefreshTimer) {
-                clearTimeout(autoRefreshTimer);
+            // 如果需要刷新，先刷新当前内容
+            if (btn.needRefresh) {
+                console.log('执行刷新操作...');
+                
+                // 显示刷新提示（可选）
+                const loadingMessage = document.createElement('div');
+                loadingMessage.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(0,0,0,0.8);
+                    color: white;
+                    padding: 15px 30px;
+                    border-radius: 40px;
+                    z-index: 5000;
+                    font-size: 16px;
+                `;
+                loadingMessage.textContent = '🔄 刷新内容中...';
+                document.body.appendChild(loadingMessage);
+                
+                // 刷新当前显示的内容
+                await refreshFullscreenIframe(btn);
+                await refreshVideoPlayer(btn);
+                
+                // 移除提示
+                setTimeout(() => {
+                    loadingMessage.remove();
+                }, 500);
             }
             
-            autoRefreshTimer = setTimeout(function() {
-                console.log('30分钟自动刷新时间到，正在刷新所有内容...');
-                refreshAllContent();
-            }, REFRESH_INTERVAL);
-            
-            updateRefreshTip();
+            // 根据打开方式执行
+            if (btn.openType === 'fullscreen') {
+                openFullscreen(btn.url, btn.label || '下载');
+            } else {
+                window.open(btn.url, '_blank');
+            }
         }
 
-        function updateRefreshTip() {
-            const tipElement = document.getElementById('refreshTip');
-            if (tipElement) {
-                tipElement.textContent = '⏱️ 30分钟后自动刷新';
+        // ========== APP密码控制 ==========
+        window.showAppPasswordModal = function(button) {
+            pendingAppButton = button;
+            document.getElementById('appPasswordTitle').textContent = `🔐 请输入 ${button.label} 的密码`;
+            document.getElementById('appPasswordSubtitle').textContent = button.passwordHint || '请联系管理员获取密码';
+            document.getElementById('appPasswordInput').value = '';
+            document.getElementById('appPasswordError').textContent = '';
+            document.getElementById('appPasswordOverlay').classList.add('active');
+            setTimeout(() => document.getElementById('appPasswordInput').focus(), 100);
+        };
+
+        window.closeAppPasswordModal = function() {
+            document.getElementById('appPasswordOverlay').classList.remove('active');
+            pendingAppButton = null;
+        };
+
+        window.confirmAppPassword = async function() {
+            if (!pendingAppButton) {
+                closeAppPasswordModal();
+                return;
             }
-        }
+            
+            const entered = document.getElementById('appPasswordInput').value.trim();
+            if (entered !== pendingAppButton.password) {
+                document.getElementById('appPasswordError').textContent = '密码错误';
+                document.getElementById('appPasswordInput').value = '';
+                document.getElementById('appPasswordInput').focus();
+                return;
+            }
+            
+            // 密码正确，执行打开操作
+            await executeAppButtonOpen(pendingAppButton);
+            closeAppPasswordModal();
+        };
+
+        document.getElementById('appPasswordOverlay').addEventListener('click', function(e) {
+            if (e.target === document.getElementById('appPasswordOverlay')) {
+                closeAppPasswordModal();
+            }
+        });
 
         // 停止背景切换定时器
         function stopBackgroundTimer() {
@@ -1114,8 +1190,6 @@
             await loadConfig();
             updateBackgroundFromConfig();
             
-            startAutoRefresh();
-            
             if (isAdmin) {
                 document.getElementById('frontendContainer').classList.add('hidden');
                 document.getElementById('adminContainer').classList.remove('hidden');
@@ -1142,7 +1216,6 @@
             } catch (error) {
                 console.error('加载配置失败，使用默认配置', error);
                 config = {
-                    globalPassword: '123456',
                     bgInterval: 5,
                     backgrounds: [
                         'https://i.ibb.co/wtRXTb3/16015528110706048.webp',
@@ -1154,8 +1227,9 @@
                             url: 'https://play.google.com/store/apps/details?id=com.doublep.wakey', 
                             color: '#FFD447', 
                             openType: 'fullscreen',
-                            password: '',  // 空表示无密码
-                            autoRefresh: true  // 默认需要刷新
+                            password: '',  // 无密码
+                            needRefresh: true,  // 点击时需要刷新
+                            passwordHint: '请联系管理员获取密码'
                         },
                         { 
                             label: 'AAS', 
@@ -1163,7 +1237,8 @@
                             color: '#007AFF', 
                             openType: 'newtab',
                             password: '123456',  // 有密码
-                            autoRefresh: false  // 不需要刷新
+                            needRefresh: false,  // 点击时不需要刷新
+                            passwordHint: '默认密码是123456'
                         }
                     ],
                     videoButtons: [
@@ -1218,68 +1293,6 @@
             document.getElementById('frontendContainer').classList.remove('hidden');
             renderFrontend();
             updateBackgroundFromConfig();
-        };
-
-        // ========== APP按钮密码控制 ==========
-        window.showAppPasswordModal = function(button) {
-            pendingAppButton = button;
-            document.getElementById('appPasswordTitle').textContent = `🔐 请输入 ${button.label} 的密码`;
-            document.getElementById('appPasswordSubtitle').textContent = button.passwordHint || '请联系管理员获取密码';
-            document.getElementById('appPasswordInput').value = '';
-            document.getElementById('appPasswordError').textContent = '';
-            document.getElementById('appPasswordOverlay').classList.add('active');
-            setTimeout(() => document.getElementById('appPasswordInput').focus(), 100);
-        };
-
-        window.closeAppPasswordModal = function() {
-            document.getElementById('appPasswordOverlay').classList.remove('active');
-            pendingAppButton = null;
-        };
-
-        window.confirmAppPassword = function() {
-            if (!pendingAppButton) {
-                closeAppPasswordModal();
-                return;
-            }
-            
-            const entered = document.getElementById('appPasswordInput').value.trim();
-            if (entered !== pendingAppButton.password) {
-                document.getElementById('appPasswordError').textContent = '密码错误';
-                document.getElementById('appPasswordInput').value = '';
-                document.getElementById('appPasswordInput').focus();
-                return;
-            }
-            
-            // 密码正确，执行打开操作
-            handleAppButtonOpen(pendingAppButton);
-            closeAppPasswordModal();
-        };
-
-        document.getElementById('appPasswordOverlay').addEventListener('click', function(e) {
-            if (e.target === document.getElementById('appPasswordOverlay')) {
-                closeAppPasswordModal();
-            }
-        });
-
-        // ========== 处理APP按钮打开 ==========
-        function handleAppButtonOpen(btn) {
-            closeVideo();
-            
-            if (btn.openType === 'fullscreen') {
-                openFullscreen(btn.url, btn.label || '下载');
-            } else {
-                window.open(btn.url, '_blank');
-            }
-        }
-
-        // ========== APP按钮点击处理（带密码验证） ==========
-        window.handleAppButtonClick = function(btn) {
-            // 如果有密码，先验证密码
-            if (btn.password && btn.password.trim() !== '') {
-                showAppPasswordModal(btn);
-            } else {
-                handleAppButtonOpen(btn);
-            }
         };
 
         // ========== 全屏网页控制 ==========
@@ -1352,9 +1365,9 @@
                     button.textContent += ' 🔒';
                 }
                 
-                // 如果需要刷新，添加刷新标记（仅管理员可见？这里给所有人看）
-                if (btn.autoRefresh) {
-                    button.style.border = '2px solid #4CAF50';
+                // 如果需要点击刷新，添加刷新标记
+                if (btn.needRefresh) {
+                    button.innerHTML += ' <span class="click-refresh-badge">点击刷新</span>';
                 }
                 
                 button.onclick = () => handleAppButtonClick(btn);
@@ -1424,11 +1437,12 @@
                         <span class="password-toggle" onclick="togglePasswordVisibility('app_password_${idx}')">👁️</span>
                     </div>
                     
-                    <label>自动刷新选项 <span style="font-weight:400; color:#666;">(仅对全屏打开有效)</span></label>
-                    <select id="app_autoRefresh_${idx}">
-                        <option value="true" ${btn.autoRefresh !== false ? 'selected' : ''}>✅ 需要自动刷新</option>
-                        <option value="false" ${btn.autoRefresh === false ? 'selected' : ''}>❌ 不需要刷新</option>
+                    <label>点击刷新选项</label>
+                    <select id="app_needRefresh_${idx}">
+                        <option value="true" ${btn.needRefresh !== false ? 'selected' : ''}>✅ 点击按钮时刷新当前内容</option>
+                        <option value="false" ${btn.needRefresh === false ? 'selected' : ''}>❌ 点击按钮时不刷新</option>
                     </select>
+                    <p style="font-size:12px; color:#666; margin-top:-10px; margin-bottom:15px;">如果开启，点击按钮后会先刷新当前打开的内容再打开新内容</p>
                     
                     <label>密码提示 <span style="font-weight:400; color:#666;">(选填)</span></label>
                     <input type="text" id="app_passwordHint_${idx}" value="${(btn.passwordHint || '请联系管理员获取密码').replace(/"/g, '&quot;')}" placeholder="密码提示">
@@ -1488,7 +1502,7 @@
                 color: '#FFD447',
                 openType: 'fullscreen',
                 password: '',
-                autoRefresh: true,
+                needRefresh: true,  // 默认点击刷新
                 passwordHint: '请联系管理员获取密码'
             });
             renderAdmin();
@@ -1524,7 +1538,7 @@
                     color: document.getElementById(`app_color_${idx}`)?.value || '#FFD447',
                     openType: document.getElementById(`app_openType_${idx}`)?.value || 'fullscreen',
                     password: document.getElementById(`app_password_${idx}`)?.value || '',
-                    autoRefresh: document.getElementById(`app_autoRefresh_${idx}`)?.value === 'true',
+                    needRefresh: document.getElementById(`app_needRefresh_${idx}`)?.value === 'true',
                     passwordHint: document.getElementById(`app_passwordHint_${idx}`)?.value || '请联系管理员获取密码'
                 })),
                 videoButtons: config.videoButtons.map((_, idx) => {
@@ -1568,6 +1582,7 @@
         };
 
         window.confirmVideoPassword = function() {
+            // 视频密码使用config.globalPassword
             if (!config.globalPassword) {
                 if (pendingVideoKey) performPlayVideo(pendingVideoKey);
                 closeVideoPasswordModal();
