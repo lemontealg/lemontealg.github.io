@@ -486,7 +486,7 @@
             border-color: #a0b3cc;
         }
 
-        /* 视频卡片专用样式 */
+        /* 视频卡片专用样式 - 增强版 */
         .video-card {
             background: #f8fafd;
             border-radius: 28px;
@@ -505,6 +505,17 @@
         }
         @media (max-width:700px){
             .video-grid { grid-template-columns: 1fr 2fr; }
+        }
+        
+        .video-password-field {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr 2fr;
+            gap: 16px;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #dde3e9;
         }
 
         /* 背景图片专用设置卡片 */
@@ -675,7 +686,7 @@
             color: #1e293b;
         }
 
-        /* 全屏网页容器 - 自动刷新版 */
+        /* 全屏网页容器 - 简洁版 */
         .fullscreen-overlay {
             position: fixed;
             top: 0;
@@ -698,16 +709,17 @@
         
         .fullscreen-header {
             background-color: #FFD447;
-            padding: 12px 20px;
+            padding: 8px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: #1e1e2f;
             font-weight: bold;
+            height: 40px;
         }
         
         .fullscreen-title {
-            font-size: 16px;
+            font-size: 14px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -715,18 +727,24 @@
         }
         
         .fullscreen-close {
-            background: rgba(0, 0, 0, 0.1);
+            background: transparent;
             border: none;
             color: #1e1e2f;
-            font-size: 14px;
-            padding: 6px 15px;
-            border-radius: 30px;
+            font-size: 20px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            font-weight: 600;
+            border-radius: 50%;
+            transition: all 0.2s;
+            padding: 0;
+            margin: 0;
         }
         
         .fullscreen-close:hover {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.1);
         }
         
         .fullscreen-frame {
@@ -744,10 +762,10 @@
             transform: translate(-50%, -50%);
             background: rgba(0,0,0,0.8);
             color: white;
-            padding: 15px 30px;
+            padding: 12px 24px;
             border-radius: 40px;
             z-index: 4100;
-            font-size: 16px;
+            font-size: 14px;
             display: none;
         }
         
@@ -763,7 +781,7 @@
         .loading-spinner {
             display: inline-block;
             animation: spin 1s linear infinite;
-            margin-right: 10px;
+            margin-right: 8px;
         }
 
         /* 自动刷新标记 */
@@ -776,6 +794,18 @@
             margin-left: 8px;
             background: #4CAF50;
             color: white;
+        }
+
+        /* 密码标记 */
+        .password-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+            background: #FFD447;
+            color: #1e1e2f;
         }
     </style>
 </head>
@@ -864,7 +894,7 @@
             <div id="appButtonsAdmin" class="card-grid"></div>
             <button class="btn-primary" onclick="addAppButton()" style="margin-top:20px;">➕ 新增下载按钮</button>
 
-            <h2 style="margin-top:48px;">🎬 视频按钮 · 管理</h2>
+            <h2 style="margin-top:48px;">🎬 视频按钮 · 管理 <span style="font-size:14px; font-weight:400; color:#666; margin-left:8px;">可设置独立密码</span></h2>
             <div id="videoButtonsAdmin"></div>
             <button class="btn-primary" onclick="addVideoButton()" style="margin-top:10px;">➕ 新增视频按钮</button>
 
@@ -892,8 +922,8 @@
     <!-- 视频密码弹窗 -->
     <div id="videoPasswordOverlay" class="password-overlay">
         <div class="password-box">
-            <h3>🔐 请输入视频密码</h3>
-            <div class="password-subtitle">不知密码可以找柠檬茶</div>
+            <h3 id="videoPasswordTitle">🔐 请输入视频密码</h3>
+            <div class="password-subtitle" id="videoPasswordSubtitle"></div>
             <input type="password" id="videoPasswordInput" placeholder="密码">
             <div id="videoPasswordError" class="error-message"></div>
             <div class="password-actions">
@@ -903,11 +933,11 @@
         </div>
     </div>
 
-    <!-- 全屏网页容器 - 自动刷新版 -->
+    <!-- 全屏网页容器 - 简洁版 -->
     <div id="fullscreenOverlay" class="fullscreen-overlay">
         <div class="fullscreen-header">
             <span class="fullscreen-title" id="fullscreenTitle">加载中...</span>
-            <button class="fullscreen-close" onclick="closeFullscreen()">关闭</button>
+            <button class="fullscreen-close" onclick="closeFullscreen()">✕</button>
         </div>
         <div class="fullscreen-loading" id="fullscreenLoading">
             <span class="loading-spinner">🔄</span> 刷新内容中...
@@ -929,8 +959,10 @@
         let isAdmin = sessionStorage.getItem('lemontea_admin') === 'true';
         let bgTimer = null;
 
-        // APP按钮相关
+        // 按钮相关
         let pendingAppButton = null;  // 等待验证的APP按钮
+        let pendingVideoButton = null;  // 等待验证的视频按钮
+        let pendingVideoKey = null;  // 等待播放的视频key
 
         // ========== 带自动刷新的全屏打开 ==========
         window.openFullscreenWithRefresh = function(url, title, needRefresh) {
@@ -975,7 +1007,7 @@
 
         // ========== 处理APP按钮点击 ==========
         window.handleAppButtonClick = async function(btn) {
-            console.log('点击按钮:', btn.label, '自动刷新:', btn.autoRefresh);
+            console.log('点击APP按钮:', btn.label, '自动刷新:', btn.autoRefresh);
             
             // 先检查密码
             if (btn.password && btn.password.trim() !== '') {
@@ -1047,6 +1079,65 @@
         document.getElementById('appPasswordOverlay').addEventListener('click', function(e) {
             if (e.target === document.getElementById('appPasswordOverlay')) {
                 closeAppPasswordModal();
+            }
+        });
+
+        // ========== 处理视频按钮点击 ==========
+        window.requestVideoPasswordAndPlay = function(videoKey, video) {
+            console.log('点击视频按钮:', video.title, '有密码:', !!video.password);
+            
+            // 先检查密码
+            if (video.password && video.password.trim() !== '') {
+                pendingVideoButton = video;
+                pendingVideoKey = videoKey;
+                showVideoPasswordModal(video);
+                return;
+            }
+            
+            // 无密码，直接播放
+            performPlayVideo(videoKey);
+        };
+
+        // ========== 视频密码控制 ==========
+        window.showVideoPasswordModal = function(video) {
+            document.getElementById('videoPasswordTitle').textContent = `🔐 请输入 ${video.title} 的密码`;
+            document.getElementById('videoPasswordSubtitle').textContent = video.passwordHint || '请联系管理员获取密码';
+            document.getElementById('videoPasswordInput').value = '';
+            document.getElementById('videoPasswordError').textContent = '';
+            document.getElementById('videoPasswordOverlay').classList.add('active');
+            setTimeout(() => document.getElementById('videoPasswordInput').focus(), 100);
+        };
+
+        window.closeVideoPasswordModal = function() {
+            document.getElementById('videoPasswordOverlay').classList.remove('active');
+            pendingVideoButton = null;
+            pendingVideoKey = null;
+        };
+
+        window.confirmVideoPassword = function() {
+            if (!pendingVideoButton) {
+                closeVideoPasswordModal();
+                return;
+            }
+            
+            const entered = document.getElementById('videoPasswordInput').value.trim();
+            if (entered !== pendingVideoButton.password) {
+                document.getElementById('videoPasswordError').textContent = '密码错误';
+                document.getElementById('videoPasswordInput').value = '';
+                document.getElementById('videoPasswordInput').focus();
+                return;
+            }
+            
+            // 密码正确，播放视频
+            if (pendingVideoKey) {
+                performPlayVideo(pendingVideoKey);
+            }
+            closeVideoPasswordModal();
+        };
+
+        document.getElementById('videoPasswordOverlay').addEventListener('click', function(e) {
+            if (e.target === document.getElementById('videoPasswordOverlay')) {
+                closeVideoPasswordModal();
             }
         });
 
@@ -1189,8 +1280,22 @@
                         }
                     ],
                     videoButtons: [
-                        { label: 'SUKISU教程', platform: 'google-drive', fileId: '1clTYzm2fLepJZ8N3Ibs_mcd8zD_DsRSB', youtubeUrl: '' },
-                        { label: '第二个视频', platform: 'youtube', fileId: '', youtubeUrl: 'dQw4w9WgXcQ' }
+                        { 
+                            label: 'SUKISU教程', 
+                            platform: 'google-drive', 
+                            fileId: '1clTYzm2fLepJZ8N3Ibs_mcd8zD_DsRSB', 
+                            youtubeUrl: '',
+                            password: '',  // 无密码
+                            passwordHint: '请联系管理员获取密码'
+                        },
+                        { 
+                            label: '第二个视频', 
+                            platform: 'youtube', 
+                            fileId: '', 
+                            youtubeUrl: 'dQw4w9WgXcQ',
+                            password: '123456',  // 有密码
+                            passwordHint: '默认密码是123456'
+                        }
                     ]
                 };
                 document.getElementById('loadingMessage').style.display = 'none';
@@ -1270,11 +1375,15 @@
                     videoId = ytId;
                 }
                 
-                window.videoConfig['video' + idx] = {
+                const videoObj = {
                     platform: v.platform,
                     id: videoId,
-                    title: v.label || ('视频' + (idx+1))
+                    title: v.label || ('视频' + (idx+1)),
+                    password: v.password || '',
+                    passwordHint: v.passwordHint || '请联系管理员获取密码'
                 };
+                
+                window.videoConfig['video' + idx] = videoObj;
             });
             
             const appDiv = document.getElementById('appButtons');
@@ -1294,7 +1403,7 @@
                 
                 // 如果有密码，添加锁图标
                 if (btn.password && btn.password.trim() !== '') {
-                    button.textContent += ' 🔒';
+                    button.innerHTML += ' <span class="password-badge">🔒</span>';
                 }
                 
                 // 如果开启自动刷新，添加刷新标记
@@ -1312,7 +1421,16 @@
                 const button = document.createElement('button');
                 button.style.backgroundColor = idx === 0 ? '#FF3B30' : (idx === 1 ? '#8A2BE2' : '#FF8C00');
                 button.textContent = '▶ ' + (v.label || ('视频 ' + (idx+1)));
-                button.onclick = () => requestVideoPasswordAndPlay('video' + idx);
+                
+                // 如果有密码，添加锁图标
+                if (v.password && v.password.trim() !== '') {
+                    button.innerHTML += ' <span class="password-badge">🔒</span>';
+                }
+                
+                button.onclick = () => {
+                    const video = window.videoConfig['video' + idx];
+                    requestVideoPasswordAndPlay('video' + idx, video);
+                };
                 videoDiv.appendChild(button);
             });
         }
@@ -1339,7 +1457,7 @@
                 document.getElementById('bgIntervalDisplay').textContent = 5;
             }
             
-            // App 按钮卡片 - 增加自动刷新选项
+            // App 按钮卡片
             const appAdmin = document.getElementById('appButtonsAdmin');
             appAdmin.innerHTML = '';
             config.appButtons.forEach((btn, idx) => {
@@ -1386,7 +1504,7 @@
                 appAdmin.appendChild(card);
             });
             
-            // 视频按钮管理 
+            // 视频按钮管理 - 增强版，添加密码设置
             const videoAdmin = document.getElementById('videoButtonsAdmin');
             videoAdmin.innerHTML = '';
             config.videoButtons.forEach((v, idx) => {
@@ -1400,6 +1518,7 @@
                     <div class="video-grid">
                         <label>按钮名称</label>
                         <input type="text" id="video_label_${idx}" value="${(v.label || '').replace(/"/g, '&quot;')}">
+                        
                         <label>平台</label>
                         <select id="video_platform_${idx}">
                             <option value="google-drive" ${v.platform === 'google-drive' ? 'selected' : ''}>Google Drive</option>
@@ -1410,6 +1529,17 @@
                         <div style="grid-column:2/5;">
                             <input type="text" id="video_input_${idx}" value="${(v.platform === 'google-drive' ? v.fileId || '' : v.youtubeUrl || '')}" placeholder="${v.platform === 'google-drive' ? '文件ID' : 'YouTube URL 或 ID'}">
                         </div>
+                    </div>
+                    
+                    <div class="video-password-field">
+                        <label>独立密码 <span style="font-weight:400; color:#666;">(留空表示无密码)</span></label>
+                        <div class="password-field" style="grid-column:2/3;">
+                            <input type="password" id="video_password_${idx}" value="${(v.password || '').replace(/"/g, '&quot;')}" placeholder="输入密码">
+                            <span class="password-toggle" onclick="togglePasswordVisibility('video_password_${idx}')">👁️</span>
+                        </div>
+                        
+                        <label>密码提示 <span style="font-weight:400; color:#666;">(选填)</span></label>
+                        <input type="text" id="video_passwordHint_${idx}" value="${(v.passwordHint || '请联系管理员获取密码').replace(/"/g, '&quot;')}" placeholder="密码提示" style="grid-column:2/5;">
                     </div>
                 `;
                 videoAdmin.appendChild(div);
@@ -1434,7 +1564,7 @@
                 color: '#FFD447',
                 openType: 'fullscreen',
                 password: '',
-                autoRefresh: true,  // 默认开启自动刷新
+                autoRefresh: true,
                 passwordHint: '请联系管理员获取密码'
             });
             renderAdmin();
@@ -1446,7 +1576,14 @@
         };
 
         window.addVideoButton = function() {
-            config.videoButtons.push({ label: '新视频', platform: 'google-drive', fileId: '', youtubeUrl: '' });
+            config.videoButtons.push({ 
+                label: '新视频', 
+                platform: 'google-drive', 
+                fileId: '', 
+                youtubeUrl: '',
+                password: '',
+                passwordHint: '请联系管理员获取密码'
+            });
             renderAdmin();
         };
 
@@ -1480,7 +1617,9 @@
                         label: document.getElementById(`video_label_${idx}`)?.value || '视频',
                         platform: platform,
                         fileId: platform === 'google-drive' ? inputVal : '',
-                        youtubeUrl: platform === 'youtube' ? inputVal : ''
+                        youtubeUrl: platform === 'youtube' ? inputVal : '',
+                        password: document.getElementById(`video_password_${idx}`)?.value || '',
+                        passwordHint: document.getElementById(`video_passwordHint_${idx}`)?.value || '请联系管理员获取密码'
                     };
                 })
             };
@@ -1491,51 +1630,13 @@
             window.open(GIST_EDIT_URL, '_blank');
         };
 
-        // ========== 视频播放逻辑 ==========
-        let pendingVideoKey = null;
-
-        window.requestVideoPasswordAndPlay = function(videoKey) {
-            if (!window.videoConfig[videoKey] || !window.videoConfig[videoKey].id) {
-                alert('视频尚未配置ID，请管理员在后台设置');
-                return;
-            }
-            closeFullscreen();
-            
-            pendingVideoKey = videoKey;
-            document.getElementById('videoPasswordInput').value = '';
-            document.getElementById('videoPasswordError').textContent = '';
-            document.getElementById('videoPasswordOverlay').classList.add('active');
-            setTimeout(() => document.getElementById('videoPasswordInput').focus(), 100);
-        };
-
-        window.closeVideoPasswordModal = function() {
-            document.getElementById('videoPasswordOverlay').classList.remove('active');
-            pendingVideoKey = null;
-        };
-
-        window.confirmVideoPassword = function() {
-            // 视频密码使用config.globalPassword
-            if (!config.globalPassword) {
-                if (pendingVideoKey) performPlayVideo(pendingVideoKey);
-                closeVideoPasswordModal();
-                return;
-            }
-            
-            const entered = document.getElementById('videoPasswordInput').value.trim();
-            if (entered !== config.globalPassword) {
-                document.getElementById('videoPasswordError').textContent = '密码错误';
-                document.getElementById('videoPasswordInput').value = '';
-                document.getElementById('videoPasswordInput').focus();
-                return;
-            }
-            
-            if (pendingVideoKey) performPlayVideo(pendingVideoKey);
-            closeVideoPasswordModal();
-        };
-
+        // ========== 播放视频 ==========
         function performPlayVideo(videoKey) {
             const video = window.videoConfig[videoKey];
             if (!video) return;
+            
+            // 关闭全屏
+            closeFullscreen();
             
             document.getElementById('videoTitle').textContent = `正在播放：${video.title}`;
             const playerContainer = document.getElementById('playerContainer');
@@ -1565,12 +1666,6 @@
             document.getElementById('playerContainer').innerHTML = '';
             document.getElementById('videoContainer').classList.remove('show');
         };
-
-        document.getElementById('videoPasswordOverlay').addEventListener('click', function(e) {
-            if (e.target === document.getElementById('videoPasswordOverlay')) {
-                closeVideoPasswordModal();
-            }
-        });
     </script>
 </body>
 </html>
