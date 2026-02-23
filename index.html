@@ -39,7 +39,7 @@
             background-position: center;
             background-repeat: no-repeat;
             opacity: 0;
-            transition: opacity 0s;  /* 瞬间切换，无过渡 */
+            transition: opacity 0s;
         }
         
         .bg-image.active {
@@ -79,7 +79,7 @@
             background: rgba(0, 0, 0, 0.4);
         }
 
-        /* 右上角刷新按钮和定时器显示 */
+        /* 右上角刷新按钮 */
         .refresh-button {
             position: fixed;
             top: 15px;
@@ -209,7 +209,7 @@
             display: inline-block;
         }
 
-        /* 密码弹窗 */
+        /* 密码弹窗 - 通用 */
         .password-overlay {
             position: fixed;
             top: 0;
@@ -236,7 +236,7 @@
             background: rgba(30, 30, 30, 0.95);
             border-radius: 28px;
             padding: 25px;
-            width: 280px;
+            width: 300px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.15);
             transform: scale(0.9);
@@ -251,15 +251,21 @@
         .password-box h3 {
             color: white;
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-weight: 500;
-            font-size: 22px;
+            font-size: 20px;
             text-align: center;
+        }
+
+        .password-box .password-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-bottom: 20px;
         }
 
         .password-box input {
             width: 100%;
-            padding: 15px 0 15px 15px;
+            padding: 15px;
             border: none;
             border-radius: 40px;
             background: rgba(255,255,255,0.15);
@@ -305,7 +311,7 @@
             text-align: center;
         }
 
-        /* ========== 后台管理样式 (优化版) ========== */
+        /* ========== 后台管理样式 ========== */
         .admin-container {
             max-width: 1200px;
             margin: 30px auto;
@@ -354,7 +360,7 @@
 
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 24px;
         }
 
@@ -396,6 +402,23 @@
             border-color: #FFD447;
             outline: none;
             box-shadow: 0 0 0 4px rgba(255,212,71,0.15);
+        }
+
+        .card .password-field {
+            position: relative;
+        }
+
+        .card .password-field input {
+            padding-right: 40px;
+        }
+
+        .card .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            cursor: pointer;
+            color: #666;
+            font-size: 18px;
         }
 
         .badge {
@@ -526,7 +549,7 @@
             .video-grid { grid-template-columns: 1fr 2fr; }
         }
 
-        /* 背景图片专用设置卡片 - 增强版 */
+        /* 背景图片专用设置卡片 */
         .bg-settings {
             background: #f8fafd;
             border-radius: 24px;
@@ -693,25 +716,6 @@
         .admin-container .loading {
             color: #1e293b;
         }
-        /* 全局密码框 */
-        .global-password-wrap {
-            background: #f8fafd;
-            padding: 18px 25px;
-            border-radius: 40px;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .global-password-wrap input {
-            flex: 1;
-            min-width: 200px;
-            padding: 14px 20px;
-            border-radius: 60px;
-            border: 1px solid #dde3e9;
-            font-size: 15px;
-        }
 
         /* 全屏网页容器 */
         .fullscreen-overlay {
@@ -776,8 +780,8 @@
             background: white;
         }
 
-        /* 打开方式标签 */
-        .open-type-badge {
+        /* 刷新选项标签 */
+        .refresh-badge {
             display: inline-block;
             padding: 3px 10px;
             border-radius: 20px;
@@ -786,19 +790,19 @@
             margin-left: 10px;
         }
         
-        .open-type-fullscreen {
-            background: #FFD447;
-            color: #1e1e2f;
+        .refresh-enabled {
+            background: #4CAF50;
+            color: white;
         }
         
-        .open-type-newtab {
-            background: #e2e8f0;
-            color: #334155;
+        .refresh-disabled {
+            background: #9e9e9e;
+            color: white;
         }
     </style>
 </head>
 <body>
-    <!-- 背景图片容器 (动态通过JS设置) -->
+    <!-- 背景图片容器 -->
     <div class="background-container">
         <div class="bg-image" id="bg1"></div>
         <div class="bg-image" id="bg2"></div>
@@ -832,7 +836,7 @@
     <div id="frontendContainer" class="container">
         <div id="loadingMessage" class="loading">加载配置中...</div>
         <div id="mainContent" style="display: none;">
-            <h2>🍋请选择下载或观看视频</h2>
+            <h2>🍋 柠檬茶提供<br>请选择下载或观看视频</h2>
             
             <div class="app-buttons" id="appButtons"></div>
             <div class="video-buttons" id="videoButtons"></div>
@@ -848,7 +852,7 @@
         </div>
     </div>
 
-    <!-- 后台界面 (优化后 + 背景管理 + 时间设置) - 已修改为可删除到0个按钮 + 打开方式选择 + 背景时间设置 -->
+    <!-- 后台界面 -->
     <div id="adminContainer" class="admin-container hidden">
         <div class="admin-header">
             <h1>🍋 柠檬茶 · 后台管理 <span>管理员</span></h1>
@@ -858,7 +862,7 @@
         <div id="adminLoading" class="loading" style="color:#1e293b;">加载中...</div>
         <div id="adminContent" style="display: none;">
             
-            <!-- 增强版：背景图片设置卡片 + 时间设置 -->
+            <!-- 背景图片设置卡片 -->
             <h2>🖼️ 背景图片管理</h2>
             <div class="bg-settings">
                 <div class="bg-settings-grid">
@@ -872,7 +876,7 @@
                     </div>
                 </div>
                 
-                <!-- 新增：背景切换时间设置 -->
+                <!-- 背景切换时间设置 -->
                 <div class="bg-timer-settings">
                     <div class="timer-item">
                         <label>⏱️ 背景切换间隔 (秒)</label>
@@ -888,13 +892,7 @@
                 </div>
             </div>
 
-            <h2>🔐 视频通用密码</h2>
-            <div class="global-password-wrap">
-                <input type="text" id="adminGlobalPassword" placeholder="例如 123456 (留空则无需密码)" value="">
-                <span style="color:#4b5565; font-size:14px;">修改后需手动保存至Gist</span>
-            </div>
-
-            <h2>📲 App 下载按钮 <span style="font-size:14px; font-weight:400; color:#666; margin-left:8px;">可选择打开方式</span></h2>
+            <h2>📲 App 下载按钮 <span style="font-size:14px; font-weight:400; color:#666; margin-left:8px;">可设置独立密码和刷新选项</span></h2>
             <div id="appButtonsAdmin" class="card-grid"></div>
             <button class="btn-primary" onclick="addAppButton()" style="margin-top:20px;">➕ 新增下载按钮</button>
 
@@ -909,10 +907,25 @@
         </div>
     </div>
 
-    <!-- 视频密码弹窗 -->
-    <div id="passwordOverlay" class="password-overlay">
+    <!-- 通用密码弹窗（用于APP按钮） -->
+    <div id="appPasswordOverlay" class="password-overlay">
         <div class="password-box">
-            <h3>🔐 请输入密码<br>不知密码可以找柠檬茶</h3>
+            <h3 id="appPasswordTitle">🔐 请输入密码</h3>
+            <div class="password-subtitle" id="appPasswordSubtitle"></div>
+            <input type="password" id="appPasswordInput" placeholder="密码">
+            <div id="appPasswordError" class="error-message"></div>
+            <div class="password-actions">
+                <button class="btn-cancel" onclick="closeAppPasswordModal()">取消</button>
+                <button class="btn-confirm" onclick="confirmAppPassword()">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 视频密码弹窗（保留原有） -->
+    <div id="videoPasswordOverlay" class="password-overlay">
+        <div class="password-box">
+            <h3>🔐 请输入视频密码</h3>
+            <div class="password-subtitle">不知密码可以找柠檬茶</div>
             <input type="password" id="videoPasswordInput" placeholder="密码">
             <div id="videoPasswordError" class="error-message"></div>
             <div class="password-actions">
@@ -943,35 +956,41 @@
 
         let config = null;
         let isAdmin = sessionStorage.getItem('lemontea_admin') === 'true';
-        let bgTimer = null;  // 背景切换定时器
-        let autoRefreshTimer = null;  // 自动刷新定时器
-        let lastRefreshTime = Date.now();  // 上次刷新时间
+        let bgTimer = null;
+        let autoRefreshTimer = null;
+        let lastRefreshTime = Date.now();
 
-        // ========== 刷新所有内容（包括嵌入的iframe） ==========
+        // APP按钮密码相关
+        let pendingAppButton = null;  // 等待验证的APP按钮
+
+        // ========== 刷新所有内容 ==========
         window.refreshAllContent = function() {
             console.log('手动刷新所有内容...');
             
-            // 1. 重新加载配置
             loadConfig().then(() => {
-                // 2. 重新渲染前台界面
                 if (!isAdmin) {
                     renderFrontend();
                 }
                 
-                // 3. 刷新背景
                 updateBackgroundFromConfig();
                 
-                // 4. 刷新全屏iframe（如果开着）
+                // 刷新全屏iframe（如果开着且设置了需要刷新）
                 const fullscreenFrame = document.getElementById('fullscreenFrame');
                 if (fullscreenFrame && fullscreenFrame.src && fullscreenFrame.src !== 'about:blank') {
-                    const currentSrc = fullscreenFrame.src;
-                    fullscreenFrame.src = 'about:blank';
-                    setTimeout(() => {
-                        fullscreenFrame.src = currentSrc;
-                    }, 100);
+                    // 检查当前打开的按钮是否需要刷新
+                    const currentTitle = document.getElementById('fullscreenTitle').textContent;
+                    const currentButton = config.appButtons.find(btn => btn.label === currentTitle.replace('加载中...', '').trim());
+                    
+                    if (currentButton && currentButton.autoRefresh) {
+                        const currentSrc = fullscreenFrame.src;
+                        fullscreenFrame.src = 'about:blank';
+                        setTimeout(() => {
+                            fullscreenFrame.src = currentSrc;
+                        }, 100);
+                    }
                 }
                 
-                // 5. 刷新视频播放器（如果开着）
+                // 刷新视频播放器（如果开着）
                 const playerContainer = document.getElementById('playerContainer');
                 if (playerContainer && playerContainer.children.length > 0) {
                     const videoKey = pendingVideoKey;
@@ -980,17 +999,14 @@
                     }
                 }
                 
-                // 6. 更新最后刷新时间
                 lastRefreshTime = Date.now();
-                
-                // 7. 重启自动刷新定时器
                 startAutoRefresh();
             });
         };
 
         // ========== 启动30分钟自动刷新 ==========
         function startAutoRefresh() {
-            const REFRESH_INTERVAL = 30 * 60 * 1000;  // 30分钟 = 1800000毫秒
+            const REFRESH_INTERVAL = 30 * 60 * 1000;
             
             if (autoRefreshTimer) {
                 clearTimeout(autoRefreshTimer);
@@ -1001,11 +1017,9 @@
                 refreshAllContent();
             }, REFRESH_INTERVAL);
             
-            // 更新提示文字
             updateRefreshTip();
         }
 
-        // ========== 更新刷新提示 ==========
         function updateRefreshTip() {
             const tipElement = document.getElementById('refreshTip');
             if (tipElement) {
@@ -1023,24 +1037,22 @@
 
         // 启动背景切换定时器
         function startBackgroundTimer() {
-            stopBackgroundTimer();  // 先停止旧的
+            stopBackgroundTimer();
             
             const bgInterval = config.bgInterval || 5;
             if (bgInterval < 1) return;
             
-            let currentBg = 1;  // 当前显示的是背景1
+            let currentBg = 1;
             
             bgTimer = setInterval(() => {
                 const bg1 = document.getElementById('bg1');
                 const bg2 = document.getElementById('bg2');
                 
                 if (currentBg === 1) {
-                    // 切换到背景2
                     bg1.classList.remove('active');
                     bg2.classList.add('active');
                     currentBg = 2;
                 } else {
-                    // 切换到背景1
                     bg2.classList.remove('active');
                     bg1.classList.add('active');
                     currentBg = 1;
@@ -1056,7 +1068,6 @@
             const url2 = document.getElementById('bgInput2').value.trim();
             const bgInterval = parseInt(document.getElementById('bgInterval').value) || 5;
             
-            // 设置背景图片
             if (url1) {
                 bg1.style.backgroundImage = `url('${url1}')`;
             }
@@ -1064,27 +1075,22 @@
                 bg2.style.backgroundImage = `url('${url2}')`;
             }
             
-            // 确保第一张显示，第二张隐藏
             bg1.classList.add('active');
             bg2.classList.remove('active');
             
-            // 更新config
             if (config) {
                 config.backgrounds = [url1, url2];
                 config.bgInterval = bgInterval;
             }
             
-            // 重启定时器
             startBackgroundTimer();
         }
 
-        // 更新背景时间预览
         function updateBackgroundTimePreview() {
             const bgInterval = document.getElementById('bgInterval').value;
             document.getElementById('bgIntervalDisplay').textContent = bgInterval;
         }
 
-        // 初始化背景 (从config读取)
         function updateBackgroundFromConfig() {
             const bg1 = document.getElementById('bg1');
             const bg2 = document.getElementById('bg2');
@@ -1098,19 +1104,16 @@
                 }
             }
             
-            // 确保第一张显示，第二张隐藏
             bg1.classList.add('active');
             bg2.classList.remove('active');
             
-            // 启动定时器
             startBackgroundTimer();
         }
 
         window.onload = async function() {
             await loadConfig();
-            updateBackgroundFromConfig();   // 应用背景
+            updateBackgroundFromConfig();
             
-            // 启动30分钟自动刷新
             startAutoRefresh();
             
             if (isAdmin) {
@@ -1140,14 +1143,28 @@
                 console.error('加载配置失败，使用默认配置', error);
                 config = {
                     globalPassword: '123456',
-                    bgInterval: 5,  // 默认5秒切换
+                    bgInterval: 5,
                     backgrounds: [
                         'https://i.ibb.co/wtRXTb3/16015528110706048.webp',
                         'https://i.ibb.co/4n9fmY2d/17281386694626688.webp'
                     ],
                     appButtons: [
-                        { label: '防止息屏', url: 'https://play.google.com/store/apps/details?id=com.doublep.wakey', color: '#FFD447', openType: 'fullscreen' },
-                        { label: 'AAS', url: 'https://my5353.com/app2', color: '#007AFF', openType: 'newtab' }
+                        { 
+                            label: '防止息屏', 
+                            url: 'https://play.google.com/store/apps/details?id=com.doublep.wakey', 
+                            color: '#FFD447', 
+                            openType: 'fullscreen',
+                            password: '',  // 空表示无密码
+                            autoRefresh: true  // 默认需要刷新
+                        },
+                        { 
+                            label: 'AAS', 
+                            url: 'https://my5353.com/app2', 
+                            color: '#007AFF', 
+                            openType: 'newtab',
+                            password: '123456',  // 有密码
+                            autoRefresh: false  // 不需要刷新
+                        }
                     ],
                     videoButtons: [
                         { label: 'SUKISU教程', platform: 'google-drive', fileId: '1clTYzm2fLepJZ8N3Ibs_mcd8zD_DsRSB', youtubeUrl: '' },
@@ -1200,13 +1217,73 @@
             document.getElementById('adminContainer').classList.add('hidden');
             document.getElementById('frontendContainer').classList.remove('hidden');
             renderFrontend();
-            // 退出时背景恢复config中的设置
             updateBackgroundFromConfig();
+        };
+
+        // ========== APP按钮密码控制 ==========
+        window.showAppPasswordModal = function(button) {
+            pendingAppButton = button;
+            document.getElementById('appPasswordTitle').textContent = `🔐 请输入 ${button.label} 的密码`;
+            document.getElementById('appPasswordSubtitle').textContent = button.passwordHint || '请联系管理员获取密码';
+            document.getElementById('appPasswordInput').value = '';
+            document.getElementById('appPasswordError').textContent = '';
+            document.getElementById('appPasswordOverlay').classList.add('active');
+            setTimeout(() => document.getElementById('appPasswordInput').focus(), 100);
+        };
+
+        window.closeAppPasswordModal = function() {
+            document.getElementById('appPasswordOverlay').classList.remove('active');
+            pendingAppButton = null;
+        };
+
+        window.confirmAppPassword = function() {
+            if (!pendingAppButton) {
+                closeAppPasswordModal();
+                return;
+            }
+            
+            const entered = document.getElementById('appPasswordInput').value.trim();
+            if (entered !== pendingAppButton.password) {
+                document.getElementById('appPasswordError').textContent = '密码错误';
+                document.getElementById('appPasswordInput').value = '';
+                document.getElementById('appPasswordInput').focus();
+                return;
+            }
+            
+            // 密码正确，执行打开操作
+            handleAppButtonOpen(pendingAppButton);
+            closeAppPasswordModal();
+        };
+
+        document.getElementById('appPasswordOverlay').addEventListener('click', function(e) {
+            if (e.target === document.getElementById('appPasswordOverlay')) {
+                closeAppPasswordModal();
+            }
+        });
+
+        // ========== 处理APP按钮打开 ==========
+        function handleAppButtonOpen(btn) {
+            closeVideo();
+            
+            if (btn.openType === 'fullscreen') {
+                openFullscreen(btn.url, btn.label || '下载');
+            } else {
+                window.open(btn.url, '_blank');
+            }
+        }
+
+        // ========== APP按钮点击处理（带密码验证） ==========
+        window.handleAppButtonClick = function(btn) {
+            // 如果有密码，先验证密码
+            if (btn.password && btn.password.trim() !== '') {
+                showAppPasswordModal(btn);
+            } else {
+                handleAppButtonOpen(btn);
+            }
         };
 
         // ========== 全屏网页控制 ==========
         window.openFullscreen = function(url, title) {
-            // 关闭视频播放器（如果开着）
             closeVideo();
             
             const fullscreenOverlay = document.getElementById('fullscreenOverlay');
@@ -1217,7 +1294,6 @@
             fullscreenFrame.src = url;
             fullscreenOverlay.classList.add('active');
             
-            // 防止body滚动
             document.body.style.overflow = 'hidden';
         };
 
@@ -1227,25 +1303,7 @@
             fullscreenFrame.src = 'about:blank';
             fullscreenOverlay.classList.remove('active');
             
-            // 恢复body滚动
             document.body.style.overflow = '';
-        };
-
-        // ========== 新窗口打开 ==========
-        window.openNewTab = function(url) {
-            window.open(url, '_blank');
-        };
-
-        // ========== 根据打开方式处理点击 ==========
-        window.handleAppButtonClick = function(btn) {
-            // 关闭视频播放器（如果开着）
-            closeVideo();
-            
-            if (btn.openType === 'fullscreen') {
-                openFullscreen(btn.url, btn.label || '下载');
-            } else {
-                openNewTab(btn.url);
-            }
         };
 
         // ========== 渲染前台 ==========
@@ -1282,11 +1340,21 @@
                 button.style.color = (btn.color || '').toUpperCase() === '#FFD447' ? '#333' : 'white';
                 button.textContent = btn.label || '下载';
                 
-                // 添加一个小标记显示打开方式（可选）
+                // 添加标记
                 if (btn.openType === 'fullscreen') {
                     button.textContent += ' 📱';
                 } else {
                     button.textContent += ' 🔗';
+                }
+                
+                // 如果有密码，添加锁图标
+                if (btn.password && btn.password.trim() !== '') {
+                    button.textContent += ' 🔒';
+                }
+                
+                // 如果需要刷新，添加刷新标记（仅管理员可见？这里给所有人看）
+                if (btn.autoRefresh) {
+                    button.style.border = '2px solid #4CAF50';
                 }
                 
                 button.onclick = () => handleAppButtonClick(btn);
@@ -1304,7 +1372,7 @@
             });
         }
 
-        // ========== 渲染后台 (包含背景字段 + 时间设置 + 打开方式选择) ==========
+        // ========== 渲染后台 ==========
         function renderAdmin() {
             document.getElementById('adminLoading').style.display = 'none';
             document.getElementById('adminContent').style.display = 'block';
@@ -1318,7 +1386,6 @@
                 document.getElementById('bgInput2').value = 'https://i.ibb.co/4n9fmY2d/17281386694626688.webp';
             }
             
-            // 设置背景切换时间
             if (config.bgInterval) {
                 document.getElementById('bgInterval').value = config.bgInterval;
                 document.getElementById('bgIntervalDisplay').textContent = config.bgInterval;
@@ -1327,9 +1394,7 @@
                 document.getElementById('bgIntervalDisplay').textContent = 5;
             }
             
-            document.getElementById('adminGlobalPassword').value = config.globalPassword || '';
-            
-            // App 按钮卡片 - 添加打开方式选择
+            // App 按钮卡片 - 增强版
             const appAdmin = document.getElementById('appButtonsAdmin');
             appAdmin.innerHTML = '';
             config.appButtons.forEach((btn, idx) => {
@@ -1337,17 +1402,37 @@
                 card.className = 'card';
                 card.innerHTML = `
                     <div class="badge">📱 按钮 ${idx+1}</div>
+                    
                     <label>按钮名称</label>
                     <input type="text" id="app_label_${idx}" value="${(btn.label || '').replace(/"/g, '&quot;')}">
+                    
                     <label>链接 (URL)</label>
                     <input type="url" id="app_url_${idx}" value="${(btn.url || '').replace(/"/g, '&quot;')}">
+                    
                     <label>背景颜色 <span style="font-weight:400; color:#666;">(如 #FFD447)</span></label>
                     <input type="text" id="app_color_${idx}" value="${btn.color || '#FFD447'}">
+                    
                     <label>打开方式</label>
                     <select id="app_openType_${idx}">
                         <option value="fullscreen" ${(btn.openType || 'fullscreen') === 'fullscreen' ? 'selected' : ''}>📱 全屏打开 (在当前页面)</option>
                         <option value="newtab" ${(btn.openType || 'fullscreen') === 'newtab' ? 'selected' : ''}>🔗 新窗口打开 (新标签页)</option>
                     </select>
+                    
+                    <label>独立密码 <span style="font-weight:400; color:#666;">(留空表示无密码)</span></label>
+                    <div class="password-field">
+                        <input type="password" id="app_password_${idx}" value="${(btn.password || '').replace(/"/g, '&quot;')}" placeholder="输入密码">
+                        <span class="password-toggle" onclick="togglePasswordVisibility('app_password_${idx}')">👁️</span>
+                    </div>
+                    
+                    <label>自动刷新选项 <span style="font-weight:400; color:#666;">(仅对全屏打开有效)</span></label>
+                    <select id="app_autoRefresh_${idx}">
+                        <option value="true" ${btn.autoRefresh !== false ? 'selected' : ''}>✅ 需要自动刷新</option>
+                        <option value="false" ${btn.autoRefresh === false ? 'selected' : ''}>❌ 不需要刷新</option>
+                    </select>
+                    
+                    <label>密码提示 <span style="font-weight:400; color:#666;">(选填)</span></label>
+                    <input type="text" id="app_passwordHint_${idx}" value="${(btn.passwordHint || '请联系管理员获取密码').replace(/"/g, '&quot;')}" placeholder="密码提示">
+                    
                     <div style="display: flex; gap: 8px; justify-content:flex-end; margin-top:8px;">
                         <button class="btn-danger" onclick="removeAppButton(${idx})">🗑️ 删除</button>
                     </div>
@@ -1385,28 +1470,26 @@
             });
         }
 
-        // 预览背景 (临时生效，不保存到config)
-        window.applyBackgroundSettings = function() {
-            const url1 = document.getElementById('bgInput1').value.trim();
-            const url2 = document.getElementById('bgInput2').value.trim();
-            const bgInterval = parseInt(document.getElementById('bgInterval').value) || 5;
-            
-            // 临时更新config中的值
-            if (!config) config = {};
-            config.backgrounds = [url1, url2];
-            config.bgInterval = bgInterval;
-            
-            // 应用背景
-            updateBackgroundFromConfig();
+        // 密码显示切换
+        window.togglePasswordVisibility = function(inputId) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+            } else {
+                input.type = 'password';
+            }
         };
 
-        // ========== 后台操作 (已修改为可删除到0) ==========
+        // ========== 后台操作 ==========
         window.addAppButton = function() {
             config.appButtons.push({ 
                 label: '新下载', 
                 url: 'https://', 
                 color: '#FFD447',
-                openType: 'fullscreen'  // 默认全屏打开
+                openType: 'fullscreen',
+                password: '',
+                autoRefresh: true,
+                passwordHint: '请联系管理员获取密码'
             });
             renderAdmin();
         };
@@ -1426,9 +1509,8 @@
             renderAdmin();
         };
 
-        // ========== 跳转到 Gist 编辑 (收集当前配置 + 背景 + 时间 + 打开方式) ==========
+        // ========== 跳转到 Gist 编辑 ==========
         window.openGistEdit = function() {
-            // 收集背景和时间
             const bg1 = document.getElementById('bgInput1').value.trim() || 'https://i.ibb.co/wtRXTb3/16015528110706048.webp';
             const bg2 = document.getElementById('bgInput2').value.trim() || 'https://i.ibb.co/4n9fmY2d/17281386694626688.webp';
             const bgInterval = parseInt(document.getElementById('bgInterval').value) || 5;
@@ -1436,12 +1518,14 @@
             const currentConfig = {
                 bgInterval: bgInterval,
                 backgrounds: [bg1, bg2],
-                globalPassword: document.getElementById('adminGlobalPassword').value,
                 appButtons: config.appButtons.map((_, idx) => ({
                     label: document.getElementById(`app_label_${idx}`)?.value || '按钮',
                     url: document.getElementById(`app_url_${idx}`)?.value || 'https://',
                     color: document.getElementById(`app_color_${idx}`)?.value || '#FFD447',
-                    openType: document.getElementById(`app_openType_${idx}`)?.value || 'fullscreen'
+                    openType: document.getElementById(`app_openType_${idx}`)?.value || 'fullscreen',
+                    password: document.getElementById(`app_password_${idx}`)?.value || '',
+                    autoRefresh: document.getElementById(`app_autoRefresh_${idx}`)?.value === 'true',
+                    passwordHint: document.getElementById(`app_passwordHint_${idx}`)?.value || '请联系管理员获取密码'
                 })),
                 videoButtons: config.videoButtons.map((_, idx) => {
                     const platform = document.getElementById(`video_platform_${idx}`)?.value || 'google-drive';
@@ -1456,7 +1540,7 @@
             };
             
             const configStr = JSON.stringify(currentConfig, null, 2);
-            alert('👉 步骤：\n1. 复制弹出的配置内容 (包含背景和时间设置)\n2. 点击确定后打开 Gist\n3. 粘贴覆盖原有内容\n4. 点击 Update 保存');
+            alert('👉 步骤：\n1. 复制弹出的配置内容\n2. 点击确定后打开 Gist\n3. 粘贴覆盖原有内容\n4. 点击 Update 保存');
             prompt('复制这个配置 (Ctrl+C)，然后粘贴到 Gist 中', configStr);
             window.open(GIST_EDIT_URL, '_blank');
         };
@@ -1469,18 +1553,17 @@
                 alert('视频尚未配置ID，请管理员在后台设置');
                 return;
             }
-            // 关闭全屏网页（如果开着）
             closeFullscreen();
             
             pendingVideoKey = videoKey;
             document.getElementById('videoPasswordInput').value = '';
             document.getElementById('videoPasswordError').textContent = '';
-            document.getElementById('passwordOverlay').classList.add('active');
+            document.getElementById('videoPasswordOverlay').classList.add('active');
             setTimeout(() => document.getElementById('videoPasswordInput').focus(), 100);
         };
 
         window.closeVideoPasswordModal = function() {
-            document.getElementById('passwordOverlay').classList.remove('active');
+            document.getElementById('videoPasswordOverlay').classList.remove('active');
             pendingVideoKey = null;
         };
 
@@ -1536,8 +1619,8 @@
             document.getElementById('videoContainer').classList.remove('show');
         };
 
-        document.getElementById('passwordOverlay').addEventListener('click', function(e) {
-            if (e.target === document.getElementById('passwordOverlay')) {
+        document.getElementById('videoPasswordOverlay').addEventListener('click', function(e) {
+            if (e.target === document.getElementById('videoPasswordOverlay')) {
                 closeVideoPasswordModal();
             }
         });
