@@ -808,8 +808,8 @@
     <div class="login-entrance" onclick="showLoginModal()">🔐 登录</div>
 
     <!-- 右上角刷新按钮 -->
-    <div class="refresh-button" onclick="refreshPage()">
-        <i>🔄</i> 手动刷新
+    <div class="refresh-button" onclick="refreshAllContent()">
+        <i>🔄</i> 刷新内容
     </div>
 
     <!-- 定时刷新提示 -->
@@ -832,7 +832,7 @@
     <div id="frontendContainer" class="container">
         <div id="loadingMessage" class="loading">加载配置中...</div>
         <div id="mainContent" style="display: none;">
-            <h2>🍋<br>请选择下载或观看视频</h2>
+            <h2>🍋请选择下载或观看视频</h2>
             
             <div class="app-buttons" id="appButtons"></div>
             <div class="video-buttons" id="videoButtons"></div>
@@ -945,27 +945,63 @@
         let isAdmin = sessionStorage.getItem('lemontea_admin') === 'true';
         let bgTimer = null;  // 背景切换定时器
         let autoRefreshTimer = null;  // 自动刷新定时器
+        let lastRefreshTime = Date.now();  // 上次刷新时间
 
-        // ========== 刷新页面函数 ==========
-        window.refreshPage = function() {
-            location.reload();
+        // ========== 刷新所有内容（包括嵌入的iframe） ==========
+        window.refreshAllContent = function() {
+            console.log('手动刷新所有内容...');
+            
+            // 1. 重新加载配置
+            loadConfig().then(() => {
+                // 2. 重新渲染前台界面
+                if (!isAdmin) {
+                    renderFrontend();
+                }
+                
+                // 3. 刷新背景
+                updateBackgroundFromConfig();
+                
+                // 4. 刷新全屏iframe（如果开着）
+                const fullscreenFrame = document.getElementById('fullscreenFrame');
+                if (fullscreenFrame && fullscreenFrame.src && fullscreenFrame.src !== 'about:blank') {
+                    const currentSrc = fullscreenFrame.src;
+                    fullscreenFrame.src = 'about:blank';
+                    setTimeout(() => {
+                        fullscreenFrame.src = currentSrc;
+                    }, 100);
+                }
+                
+                // 5. 刷新视频播放器（如果开着）
+                const playerContainer = document.getElementById('playerContainer');
+                if (playerContainer && playerContainer.children.length > 0) {
+                    const videoKey = pendingVideoKey;
+                    if (videoKey) {
+                        performPlayVideo(videoKey);
+                    }
+                }
+                
+                // 6. 更新最后刷新时间
+                lastRefreshTime = Date.now();
+                
+                // 7. 重启自动刷新定时器
+                startAutoRefresh();
+            });
         };
 
         // ========== 启动30分钟自动刷新 ==========
         function startAutoRefresh() {
-            // 30分钟 = 30 * 60 * 1000 = 1800000毫秒
-            const REFRESH_INTERVAL = 30 * 60 * 1000;
+            const REFRESH_INTERVAL = 30 * 60 * 1000;  // 30分钟 = 1800000毫秒
             
             if (autoRefreshTimer) {
                 clearTimeout(autoRefreshTimer);
             }
             
             autoRefreshTimer = setTimeout(function() {
-                console.log('30分钟自动刷新时间到，正在刷新页面...');
-                location.reload();
+                console.log('30分钟自动刷新时间到，正在刷新所有内容...');
+                refreshAllContent();
             }, REFRESH_INTERVAL);
             
-            // 更新提示文字，显示剩余时间（可选）
+            // 更新提示文字
             updateRefreshTip();
         }
 
@@ -1098,6 +1134,8 @@
                 
                 document.getElementById('loadingMessage').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
+                
+                return config;
             } catch (error) {
                 console.error('加载配置失败，使用默认配置', error);
                 config = {
@@ -1118,6 +1156,8 @@
                 };
                 document.getElementById('loadingMessage').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
+                
+                return config;
             }
         }
 
