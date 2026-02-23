@@ -79,48 +79,6 @@
             background: rgba(0, 0, 0, 0.4);
         }
 
-        /* 右上角刷新按钮 */
-        .refresh-button {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 14px;
-            cursor: pointer;
-            z-index: 100;
-            padding: 5px 10px;
-            border-radius: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(2px);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .refresh-button:hover {
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(0, 0, 0, 0.4);
-        }
-
-        .refresh-button i {
-            font-size: 16px;
-        }
-
-        /* 定时刷新提示 */
-        .auto-refresh-tip {
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 12px;
-            z-index: 100;
-            padding: 4px 8px;
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(2px);
-        }
-
         button {
             font-size: 18px;
             padding: 15px;
@@ -717,7 +675,7 @@
             color: #1e293b;
         }
 
-        /* 全屏网页容器 */
+        /* 全屏网页容器 - 自动刷新版 */
         .fullscreen-overlay {
             position: fixed;
             top: 0;
@@ -740,7 +698,7 @@
         
         .fullscreen-header {
             background-color: #FFD447;
-            padding: 15px 20px;
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -749,7 +707,7 @@
         }
         
         .fullscreen-title {
-            font-size: 18px;
+            font-size: 16px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -760,12 +718,10 @@
             background: rgba(0, 0, 0, 0.1);
             border: none;
             color: #1e1e2f;
-            font-size: 16px;
-            padding: 8px 20px;
-            border-radius: 40px;
+            font-size: 14px;
+            padding: 6px 15px;
+            border-radius: 30px;
             cursor: pointer;
-            width: auto;
-            margin: 0;
             font-weight: 600;
         }
         
@@ -780,16 +736,46 @@
             background: white;
         }
 
-        /* 点击刷新标签 */
-        .click-refresh-badge {
+        /* 加载动画 */
+        .fullscreen-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 40px;
+            z-index: 4100;
+            font-size: 16px;
+            display: none;
+        }
+        
+        .fullscreen-loading.show {
+            display: block;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        /* 自动刷新标记 */
+        .auto-refresh-badge {
             display: inline-block;
             padding: 2px 8px;
             border-radius: 12px;
             font-size: 11px;
             font-weight: 600;
             margin-left: 8px;
-            background: #FFD447;
-            color: #1e1e2f;
+            background: #4CAF50;
+            color: white;
         }
     </style>
 </head>
@@ -802,11 +788,6 @@
 
     <!-- 左上角登录入口 -->
     <div class="login-entrance" onclick="showLoginModal()">🔐 登录</div>
-
-    <!-- 右上角手动刷新按钮 -->
-    <div class="refresh-button" onclick="manualRefresh()">
-        <i>🔄</i> 手动刷新
-    </div>
 
     <!-- 登录弹窗 -->
     <div id="loginOverlay" class="login-overlay">
@@ -879,7 +860,7 @@
                 </div>
             </div>
 
-            <h2>📲 App 下载按钮 <span style="font-size:14px; font-weight:400; color:#666; margin-left:8px;">可设置独立密码和点击刷新</span></h2>
+            <h2>📲 App 下载按钮 <span style="font-size:14px; font-weight:400; color:#666; margin-left:8px;">可设置独立密码和自动刷新</span></h2>
             <div id="appButtonsAdmin" class="card-grid"></div>
             <button class="btn-primary" onclick="addAppButton()" style="margin-top:20px;">➕ 新增下载按钮</button>
 
@@ -922,11 +903,14 @@
         </div>
     </div>
 
-    <!-- 全屏网页容器 -->
+    <!-- 全屏网页容器 - 自动刷新版 -->
     <div id="fullscreenOverlay" class="fullscreen-overlay">
         <div class="fullscreen-header">
             <span class="fullscreen-title" id="fullscreenTitle">加载中...</span>
             <button class="fullscreen-close" onclick="closeFullscreen()">关闭</button>
+        </div>
+        <div class="fullscreen-loading" id="fullscreenLoading">
+            <span class="loading-spinner">🔄</span> 刷新内容中...
         </div>
         <iframe id="fullscreenFrame" class="fullscreen-frame" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads allow-top-navigation"></iframe>
     </div>
@@ -948,117 +932,80 @@
         // APP按钮相关
         let pendingAppButton = null;  // 等待验证的APP按钮
 
-        // ========== 手动刷新页面 ==========
-        window.manualRefresh = function() {
-            location.reload();
+        // ========== 带自动刷新的全屏打开 ==========
+        window.openFullscreenWithRefresh = function(url, title, needRefresh) {
+            closeVideo();
+            
+            const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+            const fullscreenFrame = document.getElementById('fullscreenFrame');
+            const fullscreenTitle = document.getElementById('fullscreenTitle');
+            const fullscreenLoading = document.getElementById('fullscreenLoading');
+            
+            fullscreenTitle.textContent = title || '加载中...';
+            
+            // 先显示全屏容器
+            fullscreenOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // 如果需要自动刷新
+            if (needRefresh) {
+                // 显示加载动画
+                fullscreenLoading.classList.add('show');
+                
+                // 先生成一个随机的刷新参数
+                const refreshParam = `&_refresh=${Date.now()}`;
+                const refreshUrl = url.includes('?') ? url + refreshParam : url + '?' + refreshParam.substring(1);
+                
+                console.log('自动刷新模式，使用带时间戳的URL:', refreshUrl);
+                
+                // 设置iframe源
+                fullscreenFrame.src = refreshUrl;
+                
+                // 监听加载完成事件，隐藏加载动画
+                fullscreenFrame.onload = function() {
+                    setTimeout(() => {
+                        fullscreenLoading.classList.remove('show');
+                    }, 300);
+                };
+            } else {
+                // 普通模式，直接加载
+                fullscreenFrame.src = url;
+            }
         };
 
-        // ========== 刷新当前全屏iframe（如果需要） ==========
-        function refreshFullscreenIframe(button) {
-            return new Promise((resolve) => {
-                const fullscreenFrame = document.getElementById('fullscreenFrame');
-                const fullscreenOverlay = document.getElementById('fullscreenOverlay');
-                
-                // 如果全屏窗口是打开的，并且是同一个按钮，并且需要刷新
-                if (fullscreenOverlay.classList.contains('active') && 
-                    fullscreenFrame.src && 
-                    fullscreenFrame.src !== 'about:blank' &&
-                    button.needRefresh) {
-                    
-                    console.log(`刷新全屏内容: ${button.label}`);
-                    const currentSrc = fullscreenFrame.src;
-                    fullscreenFrame.src = 'about:blank';
-                    
-                    // 短暂延迟后重新加载
-                    setTimeout(() => {
-                        fullscreenFrame.src = currentSrc;
-                        resolve();
-                    }, 100);
-                } else {
-                    resolve();
-                }
-            });
-        }
-
-        // ========== 刷新视频播放器（如果需要） ==========
-        function refreshVideoPlayer(button) {
-            return new Promise((resolve) => {
-                const videoContainer = document.getElementById('videoContainer');
-                const playerContainer = document.getElementById('playerContainer');
-                
-                // 如果视频正在播放，并且需要刷新
-                if (videoContainer.classList.contains('show') && 
-                    playerContainer.children.length > 0 &&
-                    button.needRefresh) {
-                    
-                    console.log(`刷新视频播放器`);
-                    const videoKey = pendingVideoKey;
-                    if (videoKey) {
-                        // 重新播放视频
-                        performPlayVideo(videoKey);
-                    }
-                }
-                resolve();
-            });
-        }
-
-        // ========== 处理APP按钮点击（带密码验证和刷新选项） ==========
+        // ========== 处理APP按钮点击 ==========
         window.handleAppButtonClick = async function(btn) {
-            console.log('点击按钮:', btn.label, '需要刷新:', btn.needRefresh);
+            console.log('点击按钮:', btn.label, '自动刷新:', btn.autoRefresh);
             
             // 先检查密码
             if (btn.password && btn.password.trim() !== '') {
-                // 有密码，先保存按钮信息，等待密码验证
                 pendingAppButton = btn;
                 showAppPasswordModal(btn);
                 return;
             }
             
-            // 无密码，直接执行打开操作（可能先刷新）
-            await executeAppButtonOpen(btn);
+            // 无密码，直接执行打开操作（带自动刷新参数）
+            executeAppButtonOpen(btn);
         };
 
-        // ========== 执行APP按钮打开操作（带刷新） ==========
-        async function executeAppButtonOpen(btn) {
+        // ========== 执行APP按钮打开操作（带自动刷新） ==========
+        function executeAppButtonOpen(btn) {
             // 关闭视频播放器
             closeVideo();
             
-            // 如果需要刷新，先刷新当前内容
-            if (btn.needRefresh) {
-                console.log('执行刷新操作...');
-                
-                // 显示刷新提示（可选）
-                const loadingMessage = document.createElement('div');
-                loadingMessage.style.cssText = `
-                    position: fixed;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    background: rgba(0,0,0,0.8);
-                    color: white;
-                    padding: 15px 30px;
-                    border-radius: 40px;
-                    z-index: 5000;
-                    font-size: 16px;
-                `;
-                loadingMessage.textContent = '🔄 刷新内容中...';
-                document.body.appendChild(loadingMessage);
-                
-                // 刷新当前显示的内容
-                await refreshFullscreenIframe(btn);
-                await refreshVideoPlayer(btn);
-                
-                // 移除提示
-                setTimeout(() => {
-                    loadingMessage.remove();
-                }, 500);
-            }
-            
             // 根据打开方式执行
             if (btn.openType === 'fullscreen') {
-                openFullscreen(btn.url, btn.label || '下载');
+                // 全屏打开，传入autoRefresh参数
+                openFullscreenWithRefresh(btn.url, btn.label || '下载', btn.autoRefresh);
             } else {
-                window.open(btn.url, '_blank');
+                // 新窗口打开，如果需要自动刷新，也添加时间戳参数
+                if (btn.autoRefresh) {
+                    const refreshParam = `&_t=${Date.now()}`;
+                    const refreshUrl = btn.url.includes('?') ? btn.url + refreshParam : btn.url + '?' + refreshParam.substring(1);
+                    window.open(refreshUrl, '_blank');
+                } else {
+                    window.open(btn.url, '_blank');
+                }
             }
         }
 
@@ -1078,7 +1025,7 @@
             pendingAppButton = null;
         };
 
-        window.confirmAppPassword = async function() {
+        window.confirmAppPassword = function() {
             if (!pendingAppButton) {
                 closeAppPasswordModal();
                 return;
@@ -1092,8 +1039,8 @@
                 return;
             }
             
-            // 密码正确，执行打开操作
-            await executeAppButtonOpen(pendingAppButton);
+            // 密码正确，执行打开操作（带自动刷新参数）
+            executeAppButtonOpen(pendingAppButton);
             closeAppPasswordModal();
         };
 
@@ -1228,7 +1175,7 @@
                             color: '#FFD447', 
                             openType: 'fullscreen',
                             password: '',  // 无密码
-                            needRefresh: true,  // 点击时需要刷新
+                            autoRefresh: true,  // 开启自动刷新
                             passwordHint: '请联系管理员获取密码'
                         },
                         { 
@@ -1237,7 +1184,7 @@
                             color: '#007AFF', 
                             openType: 'newtab',
                             password: '123456',  // 有密码
-                            needRefresh: false,  // 点击时不需要刷新
+                            autoRefresh: false,  // 关闭自动刷新
                             passwordHint: '默认密码是123456'
                         }
                     ],
@@ -1295,27 +1242,12 @@
             updateBackgroundFromConfig();
         };
 
-        // ========== 全屏网页控制 ==========
-        window.openFullscreen = function(url, title) {
-            closeVideo();
-            
-            const fullscreenOverlay = document.getElementById('fullscreenOverlay');
-            const fullscreenFrame = document.getElementById('fullscreenFrame');
-            const fullscreenTitle = document.getElementById('fullscreenTitle');
-            
-            fullscreenTitle.textContent = title || '加载中...';
-            fullscreenFrame.src = url;
-            fullscreenOverlay.classList.add('active');
-            
-            document.body.style.overflow = 'hidden';
-        };
-
+        // ========== 关闭全屏 ==========
         window.closeFullscreen = function() {
             const fullscreenOverlay = document.getElementById('fullscreenOverlay');
             const fullscreenFrame = document.getElementById('fullscreenFrame');
             fullscreenFrame.src = 'about:blank';
             fullscreenOverlay.classList.remove('active');
-            
             document.body.style.overflow = '';
         };
 
@@ -1365,9 +1297,9 @@
                     button.textContent += ' 🔒';
                 }
                 
-                // 如果需要点击刷新，添加刷新标记
-                if (btn.needRefresh) {
-                    button.innerHTML += ' <span class="click-refresh-badge">点击刷新</span>';
+                // 如果开启自动刷新，添加刷新标记
+                if (btn.autoRefresh) {
+                    button.innerHTML += ' <span class="auto-refresh-badge">自动刷新</span>';
                 }
                 
                 button.onclick = () => handleAppButtonClick(btn);
@@ -1407,7 +1339,7 @@
                 document.getElementById('bgIntervalDisplay').textContent = 5;
             }
             
-            // App 按钮卡片 - 增强版
+            // App 按钮卡片 - 增加自动刷新选项
             const appAdmin = document.getElementById('appButtonsAdmin');
             appAdmin.innerHTML = '';
             config.appButtons.forEach((btn, idx) => {
@@ -1437,12 +1369,12 @@
                         <span class="password-toggle" onclick="togglePasswordVisibility('app_password_${idx}')">👁️</span>
                     </div>
                     
-                    <label>点击刷新选项</label>
-                    <select id="app_needRefresh_${idx}">
-                        <option value="true" ${btn.needRefresh !== false ? 'selected' : ''}>✅ 点击按钮时刷新当前内容</option>
-                        <option value="false" ${btn.needRefresh === false ? 'selected' : ''}>❌ 点击按钮时不刷新</option>
+                    <label>自动刷新选项</label>
+                    <select id="app_autoRefresh_${idx}">
+                        <option value="true" ${btn.autoRefresh !== false ? 'selected' : ''}>✅ 开启自动刷新 (点击按钮时刷新内容)</option>
+                        <option value="false" ${btn.autoRefresh === false ? 'selected' : ''}>❌ 关闭自动刷新</option>
                     </select>
-                    <p style="font-size:12px; color:#666; margin-top:-10px; margin-bottom:15px;">如果开启，点击按钮后会先刷新当前打开的内容再打开新内容</p>
+                    <p style="font-size:12px; color:#666; margin-top:-10px; margin-bottom:15px;">开启后，每次点击按钮都会刷新嵌入的网页内容</p>
                     
                     <label>密码提示 <span style="font-weight:400; color:#666;">(选填)</span></label>
                     <input type="text" id="app_passwordHint_${idx}" value="${(btn.passwordHint || '请联系管理员获取密码').replace(/"/g, '&quot;')}" placeholder="密码提示">
@@ -1502,7 +1434,7 @@
                 color: '#FFD447',
                 openType: 'fullscreen',
                 password: '',
-                needRefresh: true,  // 默认点击刷新
+                autoRefresh: true,  // 默认开启自动刷新
                 passwordHint: '请联系管理员获取密码'
             });
             renderAdmin();
@@ -1538,7 +1470,7 @@
                     color: document.getElementById(`app_color_${idx}`)?.value || '#FFD447',
                     openType: document.getElementById(`app_openType_${idx}`)?.value || 'fullscreen',
                     password: document.getElementById(`app_password_${idx}`)?.value || '',
-                    needRefresh: document.getElementById(`app_needRefresh_${idx}`)?.value === 'true',
+                    autoRefresh: document.getElementById(`app_autoRefresh_${idx}`)?.value === 'true',
                     passwordHint: document.getElementById(`app_passwordHint_${idx}`)?.value || '请联系管理员获取密码'
                 })),
                 videoButtons: config.videoButtons.map((_, idx) => {
