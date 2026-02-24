@@ -81,9 +81,9 @@
 
         /* ========== 前台样式 ========== */
         .container {
-            max-width: 400px;
-            margin: auto;
-            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 15px;
             background: transparent;
             border-radius: 20px;
             position: relative;
@@ -113,45 +113,74 @@
             background: rgba(0, 0, 0, 0.5);
         }
 
-        button {
-            font-size: 18px;
-            padding: 15px;
-            border-radius: 12px;
-            color: white;
-            border: none;
-            cursor: pointer;
-            width: 100%;
+        /* ===== 真正的手机应用小图标样式 ===== */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);  /* 每行4个图标 */
+            gap: 8px;
             margin-bottom: 20px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
+            padding: 5px;
         }
         
-        button:hover {
-            opacity: 0.9;
-            transform: scale(1.02);
-        }
-
-        h2 {
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            margin-bottom: 30px;
-            text-align: center;
-            font-size: 24px;
-        }
-        
-        p {
-            color: white;
-            font-size:14px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-            text-align: center;
-        }
-        
-        .app-buttons, .video-buttons {
+        .app-icon {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-bottom: 15px;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            border-radius: 16px;
+            padding: 8px 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            aspect-ratio: 1 / 1;
+            width: 100%;
+        }
+        
+        .app-icon:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .app-icon .icon-emoji {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .app-icon .icon-label {
+            font-size: 11px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            font-weight: 500;
+            text-align: center;
+            word-break: break-word;
+            max-width: 100%;
+            line-height: 1.2;
+        }
+        
+        .app-icon .icon-badge {
+            display: flex;
+            gap: 2px;
+            margin-top: 2px;
+        }
+        
+        .app-icon .badge {
+            font-size: 9px;
+            padding: 1px 3px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.3);
+            color: white;
+        }
+        
+        .app-icon .badge-lock {
+            background: #FFD447;
+            color: #333;
+        }
+        
+        .app-icon .badge-refresh {
+            background: #4CAF50;
+            color: white;
         }
 
         /* 视频播放器 */
@@ -269,6 +298,10 @@
             border: 1px solid rgba(255,255,255,0.2);
             margin-bottom: 15px;
             text-align: center;
+        }
+
+        .password-box input:focus {
+            border-color: #FFD447;
         }
 
         .password-actions {
@@ -414,6 +447,38 @@
             font-size: 18px;
         }
 
+        /* 颜色选择器样式 */
+        .color-picker-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        
+        .color-picker-container input[type="color"] {
+            width: 60px;
+            height: 45px;
+            padding: 5px;
+            border-radius: 12px;
+            border: 1px solid #dde3e9;
+            cursor: pointer;
+            background: white;
+        }
+        
+        .color-picker-container input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        
+        .color-picker-container input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 8px;
+        }
+        
+        .color-picker-container input[type="text"] {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
         .badge {
             background: #FFD447;
             color: #1e1e2f;
@@ -521,7 +586,7 @@
             border-color: #a0b3cc;
         }
 
-        /* 视频卡片专用样式 - 增强版 */
+        /* 视频卡片专用样式 */
         .video-card {
             background: #f8fafd;
             border-radius: 28px;
@@ -552,8 +617,17 @@
             padding-top: 10px;
             border-top: 1px dashed #dde3e9;
         }
+        
+        .video-color-field {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr 2fr;
+            gap: 16px;
+            align-items: center;
+            margin-top: 10px;
+        }
 
-        /* 背景图片专用设置卡片 - 增强版，支持多设备 */
+        /* 背景图片专用设置卡片 */
         .bg-settings {
             background: #f8fafd;
             border-radius: 24px;
@@ -677,7 +751,7 @@
             font-size: 18px;
         }
 
-        /* 登录弹窗 - 修改版，不记住账号密码 */
+        /* 登录弹窗 */
         .login-overlay {
             position: fixed;
             top: 0;
@@ -758,7 +832,7 @@
             color: #1e293b;
         }
 
-        /* 全屏网页容器 - 简洁版 */
+        /* 全屏网页容器 */
         .fullscreen-overlay {
             position: fixed;
             top: 0;
@@ -856,30 +930,6 @@
             margin-right: 8px;
         }
 
-        /* 自动刷新标记 */
-        .auto-refresh-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 8px;
-            background: #4CAF50;
-            color: white;
-        }
-
-        /* 密码标记 */
-        .password-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 8px;
-            background: #FFD447;
-            color: #1e1e2f;
-        }
-
         /* 设备类型指示器 */
         .device-indicator {
             position: fixed;
@@ -917,12 +967,12 @@
     <!-- 左上角登录入口 -->
     <div class="login-entrance" onclick="showLoginModal()">🔐登录</div>
 
-    <!-- 登录弹窗 - 已移除预填账号密码 -->
+    <!-- 登录弹窗 -->
     <div id="loginOverlay" class="login-overlay">
         <div class="login-box">
             <h2>管理员登录</h2>
             <input type="text" id="username" placeholder="账号" value="" autocomplete="off">
-            <input type="password" id="password" placeholder="密码" value="" autocomplete="off">
+            <input type="password" id="password" placeholder="密码" value="" autocomplete="off" onkeypress="handleLoginKeyPress(event)">
             <button onclick="handleLogin()">进入后台</button>
             <p class="login-note" onclick="closeLoginModal()">点击空白处关闭</p>
         </div>
@@ -932,10 +982,13 @@
     <div id="frontendContainer" class="container">
         <div id="loadingMessage" class="loading">加载配置中...</div>
         <div id="mainContent" style="display: none;">
-            <h2>🍋请选择下载或观看视频</h2>
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: white; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">🍋 请选择下载或观看视频</h2>
             
-            <div class="app-buttons" id="appButtons"></div>
-            <div class="video-buttons" id="videoButtons"></div>
+            <!-- App下载图标网格 - 每行4个，像手机桌面 -->
+            <div class="app-grid" id="appButtons"></div>
+            
+            <!-- 视频图标网格 - 每行4个，像手机桌面 -->
+            <div class="app-grid" id="videoButtons"></div>
             
             <!-- 视频播放区域 -->
             <div id="videoContainer" class="video-container">
@@ -944,7 +997,7 @@
                 <button class="close-video" onclick="closeVideo()">关闭视频</button>
             </div>
             
-            <p>点击按钮开始下载或观看视频</p>
+            <p style="font-size: 11px; margin-top: 10px; color: rgba(255,255,255,0.7);">点击图标开始</p>
         </div>
     </div>
 
@@ -959,9 +1012,8 @@
         <div id="adminContent" style="display: none;">
             
             <!-- 背景图片设置卡片 -->
-            <h2>🖼️ 背景图片管理 <span style="font-size:14px; font-weight:400; color:#666; margin-left:8px;">手机和电脑可设置不同背景</span></h2>
+            <h2>🖼️ 背景图片管理</h2>
             <div class="bg-settings">
-                <!-- 手机背景设置 -->
                 <div class="bg-settings-grid">
                     <div class="bg-device-section">
                         <div class="bg-device-title">
@@ -969,59 +1021,74 @@
                             <span>手机背景设置</span>
                         </div>
                         <div class="bg-device-item">
-                            <label>手机背景图 1 (第一张)</label>
+                            <label>手机背景图 1</label>
                             <input type="url" id="mobileBgInput1" placeholder="https://...手机背景图1" value="">
                         </div>
                         <div class="bg-device-item">
-                            <label>手机背景图 2 (第二张)</label>
+                            <label>手机背景图 2</label>
                             <input type="url" id="mobileBgInput2" placeholder="https://...手机背景图2" value="">
                         </div>
                     </div>
                     
-                    <!-- 电脑背景设置 -->
                     <div class="bg-device-section">
                         <div class="bg-device-title">
                             <span class="bg-device-icon">💻</span>
                             <span>电脑背景设置</span>
                         </div>
                         <div class="bg-device-item">
-                            <label>电脑背景图 1 (第一张)</label>
+                            <label>电脑背景图 1</label>
                             <input type="url" id="desktopBgInput1" placeholder="https://...电脑背景图1" value="">
                         </div>
                         <div class="bg-device-item">
-                            <label>电脑背景图 2 (第二张)</label>
+                            <label>电脑背景图 2</label>
                             <input type="url" id="desktopBgInput2" placeholder="https://...电脑背景图2" value="">
                         </div>
                     </div>
                 </div>
                 
-                <!-- 背景切换时间设置 -->
                 <div class="bg-timer-settings">
                     <div class="timer-item">
                         <label>⏱️ 背景切换间隔 (秒)</label>
                         <input type="number" id="bgInterval" min="1" max="60" value="5" step="1" onchange="updateBackgroundTimePreview()">
                     </div>
                     <div class="timer-preview">
-                        <span>当前设置：</span>
+                        <span>当前：</span>
                         <span class="timer-value" id="bgIntervalDisplay">5</span>
-                        <span>秒切换一次</span>
+                        <span>秒</span>
                     </div>
-                    <button class="btn-primary" onclick="applyBackgroundSettings()" style="margin-bottom:0;">🔄 应用背景设置</button>
-                    <span style="font-size:13px; color:#64748b;">保存Gist后永久生效</span>
+                    <button class="btn-primary" onclick="applyBackgroundSettings()">应用</button>
                 </div>
             </div>
 
-            <h2>📲 App 下载按钮 <span style="font-size:14px; font-weight:400; color:#666; margin-left:8px;">可设置独立密码和自动刷新</span></h2>
+            <!-- 新增：每行图标数量设置 -->
+            <h2>🔘 图标布局设置</h2>
+            <div class="bg-settings">
+                <div class="bg-timer-settings">
+                    <div class="timer-item">
+                        <label>📱 每行显示几个图标？</label>
+                        <input type="range" id="iconsPerRow" min="3" max="6" value="4" step="1" oninput="updateIconsPerRow(this.value)">
+                        <span style="margin-left:10px; font-weight:700;" id="iconsPerRowValue">4</span> 个
+                    </div>
+                    <div class="timer-preview">
+                        <span>预览：</span>
+                        <span class="timer-value" id="iconsPerRowPreview">4列</span>
+                    </div>
+                    <button class="btn-primary" onclick="saveIconsPerRow()">保存设置</button>
+                </div>
+                <p style="font-size:13px; color:#666; margin-top:10px;">3 = 更大图标，6 = 更小图标</p>
+            </div>
+
+            <h2>📲 App 下载按钮</h2>
             <div id="appButtonsAdmin" class="card-grid"></div>
             <button class="btn-primary" onclick="addAppButton()" style="margin-top:20px;">➕ 新增下载按钮</button>
 
-            <h2 style="margin-top:48px;">🎬 视频按钮 · 管理 <span style="font-size:14px; font-weight:400; color:#666; margin-left:8px;">可设置独立密码</span></h2>
+            <h2 style="margin-top:48px;">🎬 视频按钮</h2>
             <div id="videoButtonsAdmin"></div>
             <button class="btn-primary" onclick="addVideoButton()" style="margin-top:10px;">➕ 新增视频按钮</button>
 
             <div class="publish-bar">
-                <div style="flex:1;"><strong>📤 保存配置到 Gist</strong> <span style="color:#4b5565; margin-left:15px;">点击按钮跳转编辑，粘贴修改后的JSON</span></div>
-                <button class="btn-success" onclick="openGistEdit()">✏️ 前往 Gist 修改</button>
+                <div style="flex:1;"><strong>📤 保存配置到 Gist</strong></div>
+                <button class="btn-success" onclick="openGistEdit()">前往 Gist 修改</button>
             </div>
         </div>
     </div>
@@ -1031,7 +1098,7 @@
         <div class="password-box">
             <h3 id="appPasswordTitle">🔐 请输入密码</h3>
             <div class="password-subtitle" id="appPasswordSubtitle"></div>
-            <input type="password" id="appPasswordInput" placeholder="密码">
+            <input type="password" id="appPasswordInput" placeholder="密码" onkeypress="handleAppPasswordKeyPress(event)">
             <div id="appPasswordError" class="error-message"></div>
             <div class="password-actions">
                 <button class="btn-cancel" onclick="closeAppPasswordModal()">取消</button>
@@ -1045,7 +1112,7 @@
         <div class="password-box">
             <h3 id="videoPasswordTitle">🔐 请输入视频密码</h3>
             <div class="password-subtitle" id="videoPasswordSubtitle"></div>
-            <input type="password" id="videoPasswordInput" placeholder="密码">
+            <input type="password" id="videoPasswordInput" placeholder="密码" onkeypress="handleVideoPasswordKeyPress(event)">
             <div id="videoPasswordError" class="error-message"></div>
             <div class="password-actions">
                 <button class="btn-cancel" onclick="closeVideoPasswordModal()">取消</button>
@@ -1085,6 +1152,33 @@
         let pendingVideoButton = null;
         let pendingVideoKey = null;
 
+        // ========== 每行图标数量控制 ==========
+        function updateIconsPerRow(value) {
+            const appGrids = document.querySelectorAll('.app-grid');
+            appGrids.forEach(grid => {
+                grid.style.gridTemplateColumns = `repeat(${value}, 1fr)`;
+            });
+            document.getElementById('iconsPerRowValue').textContent = value;
+            document.getElementById('iconsPerRowPreview').textContent = value + '列';
+        }
+
+        function saveIconsPerRow() {
+            const value = document.getElementById('iconsPerRow').value;
+            if (!config) config = {};
+            config.iconsPerRow = parseInt(value);
+            alert(`已设置为每行 ${value} 个图标，保存到Gist后永久生效`);
+        }
+
+        function loadIconsPerRow() {
+            if (config && config.iconsPerRow) {
+                const value = config.iconsPerRow;
+                document.getElementById('iconsPerRow').value = value;
+                updateIconsPerRow(value);
+            } else {
+                updateIconsPerRow(4); // 默认4列
+            }
+        }
+
         // ========== 检测设备类型 ==========
         function detectDevice() {
             const width = window.innerWidth;
@@ -1092,7 +1186,7 @@
             
             const indicator = document.getElementById('deviceIndicator');
             if (indicator) {
-                indicator.innerHTML = `📱 ${deviceType}`;
+                indicator.innerHTML = `📱 ${deviceType};
             }
             
             return deviceType;
@@ -1106,7 +1200,6 @@
                 element.style.backgroundImage = `url('${url}')`;
                 return true;
             } else {
-                // 使用默认背景
                 element.style.backgroundImage = "url('https://images.unsplash.com/photo-1557683316-973673baf926?w=400')";
                 return false;
             }
@@ -1243,6 +1336,13 @@
             closeAppPasswordModal();
         };
 
+        window.handleAppPasswordKeyPress = function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                confirmAppPassword();
+            }
+        };
+
         document.getElementById('appPasswordOverlay').addEventListener('click', function(e) {
             if (e.target === document.getElementById('appPasswordOverlay')) {
                 closeAppPasswordModal();
@@ -1295,6 +1395,13 @@
                 performPlayVideo(pendingVideoKey);
             }
             closeVideoPasswordModal();
+        };
+
+        window.handleVideoPasswordKeyPress = function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                confirmVideoPassword();
+            }
         };
 
         document.getElementById('videoPasswordOverlay').addEventListener('click', function(e) {
@@ -1392,6 +1499,7 @@
         window.onload = async function() {
             await loadConfig();
             updateBackgroundFromConfig();
+            loadIconsPerRow();
             
             detectDevice();
             
@@ -1422,6 +1530,7 @@
                 console.error('加载配置失败，使用默认配置', error);
                 config = {
                     bgInterval: 5,
+                    iconsPerRow: 4,
                     mobileBackgrounds: [
                         'https://images.unsplash.com/photo-1557683316-973673baf926?w=400',
                         'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=400'
@@ -1456,6 +1565,7 @@
                             platform: 'google-drive', 
                             fileId: '1clTYzm2fLepJZ8N3Ibs_mcd8zD_DsRSB', 
                             youtubeUrl: '',
+                            color: '#FF3B30',
                             password: '',
                             passwordHint: '请联系管理员获取密码'
                         },
@@ -1464,6 +1574,7 @@
                             platform: 'youtube', 
                             fileId: '', 
                             youtubeUrl: 'dQw4w9WgXcQ',
+                            color: '#8A2BE2',
                             password: '123456',
                             passwordHint: '默认密码是123456'
                         }
@@ -1476,7 +1587,7 @@
             }
         }
 
-        // ========== 登录弹窗控制 - 已移除预填账号密码 ==========
+        // ========== 登录弹窗控制 ==========
         window.showLoginModal = function() {
             document.getElementById('loginOverlay').classList.add('active');
             document.getElementById('username').value = '';
@@ -1486,6 +1597,13 @@
 
         window.closeLoginModal = function() {
             document.getElementById('loginOverlay').classList.remove('active');
+        };
+
+        window.handleLoginKeyPress = function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                handleLogin();
+            }
         };
 
         document.getElementById('loginOverlay').addEventListener('click', function(e) {
@@ -1531,7 +1649,7 @@
             document.body.style.overflow = '';
         };
 
-        // ========== 渲染前台 ==========
+        // ========== 渲染前台 - 使用手机桌面图标样式 ==========
         function renderFrontend() {
             window.videoConfig = {};
             config.videoButtons.forEach((v, idx) => {
@@ -1554,6 +1672,7 @@
                     platform: v.platform,
                     id: videoId,
                     title: v.label || ('视频' + (idx+1)),
+                    color: v.color || (idx === 0 ? '#FF3B30' : (idx === 1 ? '#8A2BE2' : '#FF8C00')),
                     password: v.password || '',
                     passwordHint: v.passwordHint || '请联系管理员获取密码'
                 };
@@ -1561,49 +1680,59 @@
                 window.videoConfig['video' + idx] = videoObj;
             });
             
+            // 渲染App下载图标 - 像手机桌面一样
             const appDiv = document.getElementById('appButtons');
             appDiv.innerHTML = '';
             config.appButtons.forEach(btn => {
-                const button = document.createElement('button');
-                button.style.backgroundColor = btn.color || '#FFD447';
-                button.style.color = (btn.color || '').toUpperCase() === '#FFD447' ? '#333' : 'white';
-                button.textContent = btn.label || '下载';
+                const icon = document.createElement('div');
+                icon.className = 'app-icon';
+                icon.style.backgroundColor = btn.color || '#FFD447';
                 
-                if (btn.openType === 'fullscreen') {
-                    button.textContent += ' 📱';
-                } else {
-                    button.textContent += ' 🔗';
-                }
-                
+                let badges = '';
                 if (btn.password && btn.password.trim() !== '') {
-                    button.innerHTML += ' <span class="password-badge">🔒</span>';
+                    badges += '<span class="badge badge-lock"></span>';
                 }
-                
                 if (btn.autoRefresh) {
-                    button.innerHTML += ' <span class="auto-refresh-badge"></span>';
+                    badges += '<span class="badge badge-refresh">🔄</span>';
                 }
                 
-                button.onclick = () => handleAppButtonClick(btn);
-                appDiv.appendChild(button);
+                let iconEmoji = btn.openType === 'fullscreen' ?;
+                
+                icon.innerHTML = `
+                    <div class="icon-emoji">${iconEmoji}</div>
+                    <div class="icon-label">${btn.label || '下载'}</div>
+                    <div class="icon-badge">${badges}</div>
+                `;
+                
+                icon.onclick = () => handleAppButtonClick(btn);
+                appDiv.appendChild(icon);
             });
             
+            // 渲染视频图标 - 像手机桌面一样
             const videoDiv = document.getElementById('videoButtons');
             videoDiv.innerHTML = '';
             config.videoButtons.forEach((v, idx) => {
-                const button = document.createElement('button');
-                button.style.backgroundColor = idx === 0 ? '#FF3B30' : (idx === 1 ? '#8A2BE2' : '#FF8C00');
-                button.textContent = '▶ ' + (v.label || ('视频 ' + (idx+1)));
+                const video = window.videoConfig['video' + idx];
+                const icon = document.createElement('div');
+                icon.className = 'app-icon';
+                icon.style.backgroundColor = video.color || (idx === 0 ? '#FF3B30' : (idx === 1 ? '#8A2BE2' : '#FF8C00'));
                 
-                if (v.password && v.password.trim() !== '') {
-                    button.innerHTML += ' <span class="password-badge">🔒</span>';
-                }
+                let badges = v.password && v.password.trim() !== '' ? '<span class="badge badge-lock">🔒</span>' : '';
                 
-                button.onclick = () => {
-                    const video = window.videoConfig['video' + idx];
+                icon.innerHTML = `
+                    <div class="icon-emoji">▶</div>
+                    <div class="icon-label">${v.label || ('视频' + (idx+1))}</div>
+                    <div class="icon-badge">${badges}</div>
+                `;
+                
+                icon.onclick = () => {
                     requestVideoPasswordAndPlay('video' + idx, video);
                 };
-                videoDiv.appendChild(button);
+                videoDiv.appendChild(icon);
             });
+
+            // 应用每行图标数量设置
+            loadIconsPerRow();
         }
 
         // ========== 渲染后台 ==========
@@ -1627,38 +1756,41 @@
                     <label>链接 (URL)</label>
                     <input type="url" id="app_url_${idx}" value="${(btn.url || '').replace(/"/g, '&quot;')}">
                     
-                    <label>背景颜色 <span style="font-weight:400; color:#666;">(如 #FFD447)</span></label>
-                    <input type="text" id="app_color_${idx}" value="${btn.color || '#FFD447'}">
+                    <label>背景颜色</label>
+                    <div class="color-picker-container">
+                        <input type="color" id="app_color_picker_${idx}" value="${btn.color || '#FFD447'}" onchange="updateColorText('app_color_${idx}', this.value)">
+                        <input type="text" id="app_color_${idx}" value="${btn.color || '#FFD447'}" placeholder="#FFD447" onchange="updateColorPicker('app_color_picker_${idx}', this.value)">
+                    </div>
                     
                     <label>打开方式</label>
                     <select id="app_openType_${idx}">
-                        <option value="fullscreen" ${(btn.openType || 'fullscreen') === 'fullscreen' ? 'selected' : ''}>📱 全屏打开 (在当前页面)</option>
-                        <option value="newtab" ${(btn.openType || 'fullscreen') === 'newtab' ? 'selected' : ''}>🔗 新窗口打开 (新标签页)</option>
+                        <option value="fullscreen" ${(btn.openType || 'fullscreen') === 'fullscreen' ? 'selected' : ''}>📱 全屏打开</option>
+                        <option value="newtab" ${(btn.openType || 'fullscreen') === 'newtab' ? 'selected' : ''}>🔗 新窗口打开</option>
                     </select>
                     
-                    <label>独立密码 <span style="font-weight:400; color:#666;">(留空表示无密码)</span></label>
+                    <label>独立密码</label>
                     <div class="password-field">
-                        <input type="password" id="app_password_${idx}" value="${(btn.password || '').replace(/"/g, '&quot;')}" placeholder="输入密码">
+                        <input type="password" id="app_password_${idx}" value="${(btn.password || '').replace(/"/g, '&quot;')}" placeholder="留空无密码">
                         <span class="password-toggle" onclick="togglePasswordVisibility('app_password_${idx}')">👁️</span>
                     </div>
                     
-                    <label>自动刷新选项</label>
+                    <label>自动刷新</label>
                     <select id="app_autoRefresh_${idx}">
-                        <option value="true" ${btn.autoRefresh !== false ? 'selected' : ''}>✅ 开启自动刷新 (点击按钮时刷新内容)</option>
-                        <option value="false" ${btn.autoRefresh === false ? 'selected' : ''}>❌ 关闭自动刷新</option>
+                        <option value="true" ${btn.autoRefresh !== false ? 'selected' : ''}>✅ 开启</option>
+                        <option value="false" ${btn.autoRefresh === false ? 'selected' : ''}>❌ 关闭</option>
                     </select>
-                    <p style="font-size:12px; color:#666; margin-top:-10px; margin-bottom:15px;">开启后，每次点击按钮都会刷新嵌入的网页内容</p>
                     
-                    <label>密码提示 <span style="font-weight:400; color:#666;">(选填)</span></label>
+                    <label>密码提示</label>
                     <input type="text" id="app_passwordHint_${idx}" value="${(btn.passwordHint || '请联系管理员获取密码').replace(/"/g, '&quot;')}" placeholder="密码提示">
                     
-                    <div style="display: flex; gap: 8px; justify-content:flex-end; margin-top:8px;">
+                    <div style="display: flex; gap: 8px; justify-content:flex-end;">
                         <button class="btn-danger" onclick="removeAppButton(${idx})">🗑️ 删除</button>
                     </div>
                 `;
                 appAdmin.appendChild(card);
             });
             
+            // 视频按钮管理
             const videoAdmin = document.getElementById('videoButtonsAdmin');
             videoAdmin.innerHTML = '';
             config.videoButtons.forEach((v, idx) => {
@@ -1681,24 +1813,47 @@
                         
                         <label style="grid-column:1/2;">ID/链接</label>
                         <div style="grid-column:2/5;">
-                            <input type="text" id="video_input_${idx}" value="${(v.platform === 'google-drive' ? v.fileId || '' : v.youtubeUrl || '')}" placeholder="${v.platform === 'google-drive' ? '文件ID' : 'YouTube URL 或 ID'}">
+                            <input type="text" id="video_input_${idx}" value="${(v.platform === 'google-drive' ? v.fileId || '' : v.youtubeUrl || '')}" placeholder="${v.platform === 'google-drive' ? '文件ID' : 'YouTube URL'}">
+                        </div>
+                    </div>
+                    
+                    <div class="video-color-field">
+                        <label>按钮颜色</label>
+                        <div class="color-picker-container" style="grid-column:2/5;">
+                            <input type="color" id="video_color_picker_${idx}" value="${v.color || (idx === 0 ? '#FF3B30' : (idx === 1 ? '#8A2BE2' : '#FF8C00'))}" onchange="updateColorText('video_color_${idx}', this.value)">
+                            <input type="text" id="video_color_${idx}" value="${v.color || (idx === 0 ? '#FF3B30' : (idx === 1 ? '#8A2BE2' : '#FF8C00'))}" placeholder="#FF3B30" onchange="updateColorPicker('video_color_picker_${idx}', this.value)">
                         </div>
                     </div>
                     
                     <div class="video-password-field">
-                        <label>独立密码 <span style="font-weight:400; color:#666;">(留空表示无密码)</span></label>
+                        <label>独立密码</label>
                         <div class="password-field" style="grid-column:2/3;">
-                            <input type="password" id="video_password_${idx}" value="${(v.password || '').replace(/"/g, '&quot;')}" placeholder="输入密码">
+                            <input type="password" id="video_password_${idx}" value="${(v.password || '').replace(/"/g, '&quot;')}" placeholder="留空无密码">
                             <span class="password-toggle" onclick="togglePasswordVisibility('video_password_${idx}')">👁️</span>
                         </div>
                         
-                        <label>密码提示 <span style="font-weight:400; color:#666;">(选填)</span></label>
+                        <label>密码提示</label>
                         <input type="text" id="video_passwordHint_${idx}" value="${(v.passwordHint || '请联系管理员获取密码').replace(/"/g, '&quot;')}" placeholder="密码提示" style="grid-column:2/5;">
                     </div>
                 `;
                 videoAdmin.appendChild(div);
             });
         }
+
+        // 颜色选择器同步函数
+        window.updateColorText = function(textInputId, colorValue) {
+            const textInput = document.getElementById(textInputId);
+            if (textInput) {
+                textInput.value = colorValue;
+            }
+        };
+
+        window.updateColorPicker = function(pickerId, colorValue) {
+            const picker = document.getElementById(pickerId);
+            if (picker && /^#[0-9A-F]{6}$/i.test(colorValue)) {
+                picker.value = colorValue;
+            }
+        };
 
         window.togglePasswordVisibility = function(inputId) {
             const input = document.getElementById(inputId);
@@ -1728,11 +1883,14 @@
         };
 
         window.addVideoButton = function() {
+            const newColor = config.videoButtons.length === 0 ? '#FF3B30' : 
+                            (config.videoButtons.length === 1 ? '#8A2BE2' : '#FF8C00');
             config.videoButtons.push({ 
                 label: '新视频', 
                 platform: 'google-drive', 
                 fileId: '', 
                 youtubeUrl: '',
+                color: newColor,
                 password: '',
                 passwordHint: '请联系管理员获取密码'
             });
@@ -1750,9 +1908,11 @@
             const desktopUrl1 = document.getElementById('desktopBgInput1').value.trim() || 'https://images.unsplash.com/photo-1557683316-973673baf926?w=1920';
             const desktopUrl2 = document.getElementById('desktopBgInput2').value.trim() || 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=1920';
             const bgInterval = parseInt(document.getElementById('bgInterval').value) || 5;
+            const iconsPerRow = parseInt(document.getElementById('iconsPerRow').value) || 4;
             
             const currentConfig = {
                 bgInterval: bgInterval,
+                iconsPerRow: iconsPerRow,
                 mobileBackgrounds: [mobileUrl1, mobileUrl2],
                 desktopBackgrounds: [desktopUrl1, desktopUrl2],
                 appButtons: config.appButtons.map((_, idx) => ({
@@ -1772,6 +1932,7 @@
                         platform: platform,
                         fileId: platform === 'google-drive' ? inputVal : '',
                         youtubeUrl: platform === 'youtube' ? inputVal : '',
+                        color: document.getElementById(`video_color_${idx}`)?.value || (idx === 0 ? '#FF3B30' : (idx === 1 ? '#8A2BE2' : '#FF8C00')),
                         password: document.getElementById(`video_password_${idx}`)?.value || '',
                         passwordHint: document.getElementById(`video_passwordHint_${idx}`)?.value || '请联系管理员获取密码'
                     };
@@ -1780,7 +1941,7 @@
             
             const configStr = JSON.stringify(currentConfig, null, 2);
             alert('👉 步骤：\n1. 复制弹出的配置内容\n2. 点击确定后打开 Gist\n3. 粘贴覆盖原有内容\n4. 点击 Update 保存');
-            prompt('复制这个配置 (Ctrl+C)，然后粘贴到 Gist 中', configStr);
+            prompt('复制这个配置', configStr);
             window.open(GIST_EDIT_URL, '_blank');
         };
 
