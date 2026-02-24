@@ -113,74 +113,41 @@
             background: rgba(0, 0, 0, 0.5);
         }
 
-        /* ===== 真正的手机应用小图标样式 ===== */
-        .app-grid {
+        /* ===== 简洁的小按钮样式 ===== */
+        .button-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);  /* 每行4个图标 */
+            grid-template-columns: repeat(4, 1fr);  /* 每行4个按钮 */
             gap: 8px;
             margin-bottom: 20px;
             padding: 5px;
         }
         
-        .app-icon {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(5px);
-            border-radius: 16px;
-            padding: 8px 4px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .simple-button {
             aspect-ratio: 1 / 1;
             width: 100%;
-        }
-        
-        .app-icon:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
-        }
-        
-        .app-icon .icon-emoji {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-        
-        .app-icon .icon-label {
-            font-size: 11px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
             color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            font-size: 13px;
             font-weight: 500;
-            text-align: center;
-            word-break: break-word;
-            max-width: 100%;
-            line-height: 1.2;
-        }
-        
-        .app-icon .icon-badge {
+            cursor: pointer;
             display: flex;
-            gap: 2px;
-            margin-top: 2px;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 5px;
+            transition: all 0.2s ease;
+            word-break: break-word;
+            line-height: 1.3;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .app-icon .badge {
-            font-size: 9px;
-            padding: 1px 3px;
-            border-radius: 4px;
-            background: rgba(0,0,0,0.3);
-            color: white;
-        }
-        
-        .app-icon .badge-lock {
-            background: #FFD447;
-            color: #333;
-        }
-        
-        .app-icon .badge-refresh {
-            background: #4CAF50;
-            color: white;
+        .simple-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         /* 视频播放器 */
@@ -965,7 +932,7 @@
     <div class="device-indicator" id="deviceIndicator">加载中...</div>
 
     <!-- 左上角登录入口 -->
-    <div class="login-entrance" onclick="showLoginModal()">🔐 管理员登录</div>
+    <div class="login-entrance" onclick="showLoginModal()">🔐登录</div>
 
     <!-- 登录弹窗 -->
     <div id="loginOverlay" class="login-overlay">
@@ -982,13 +949,13 @@
     <div id="frontendContainer" class="container">
         <div id="loadingMessage" class="loading">加载配置中...</div>
         <div id="mainContent" style="display: none;">
-            <h2 style="font-size: 18px; margin-bottom: 15px; color: white; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">🍋 柠檬茶</h2>
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: white; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">🍋 请选择下载或观看视频</h2>
             
-            <!-- App下载图标网格 - 每行4个，像手机桌面 -->
-            <div class="app-grid" id="appButtons"></div>
+            <!-- App下载按钮 - 简洁小方块 -->
+            <div class="button-grid" id="appButtons"></div>
             
-            <!-- 视频图标网格 - 每行4个，像手机桌面 -->
-            <div class="app-grid" id="videoButtons"></div>
+            <!-- 视频按钮 - 简洁小方块 -->
+            <div class="button-grid" id="videoButtons"></div>
             
             <!-- 视频播放区域 -->
             <div id="videoContainer" class="video-container">
@@ -997,7 +964,7 @@
                 <button class="close-video" onclick="closeVideo()">关闭视频</button>
             </div>
             
-            <p style="font-size: 11px; margin-top: 10px; color: rgba(255,255,255,0.7);">点击图标开始</p>
+            <p style="font-size: 11px; margin-top: 10px; color: rgba(255,255,255,0.7);">点击按钮开始</p>
         </div>
     </div>
 
@@ -1060,22 +1027,22 @@
                 </div>
             </div>
 
-            <!-- 新增：每行图标数量设置 -->
-            <h2>🔘 图标布局设置</h2>
+            <!-- 按钮布局设置 -->
+            <h2>🔘 按钮布局设置</h2>
             <div class="bg-settings">
                 <div class="bg-timer-settings">
                     <div class="timer-item">
-                        <label>📱 每行显示几个图标？</label>
-                        <input type="range" id="iconsPerRow" min="3" max="6" value="4" step="1" oninput="updateIconsPerRow(this.value)">
-                        <span style="margin-left:10px; font-weight:700;" id="iconsPerRowValue">4</span> 个
+                        <label>每行显示几个按钮？</label>
+                        <input type="range" id="buttonsPerRow" min="3" max="6" value="4" step="1" oninput="updateButtonsPerRow(this.value)">
+                        <span style="margin-left:10px; font-weight:700;" id="buttonsPerRowValue">4</span> 个
                     </div>
                     <div class="timer-preview">
-                        <span>预览：</span>
-                        <span class="timer-value" id="iconsPerRowPreview">4列</span>
+                        <span>当前：</span>
+                        <span class="timer-value" id="buttonsPerRowPreview">4列</span>
                     </div>
-                    <button class="btn-primary" onclick="saveIconsPerRow()">保存设置</button>
+                    <button class="btn-primary" onclick="saveButtonsPerRow()">保存设置</button>
                 </div>
-                <p style="font-size:13px; color:#666; margin-top:10px;">3 = 更大图标，6 = 更小图标</p>
+                <p style="font-size:13px; color:#666; margin-top:10px;">3 = 大按钮，4 = 中按钮，5 = 小按钮，6 = 更小按钮</p>
             </div>
 
             <h2>📲 App 下载按钮</h2>
@@ -1152,30 +1119,30 @@
         let pendingVideoButton = null;
         let pendingVideoKey = null;
 
-        // ========== 每行图标数量控制 ==========
-        function updateIconsPerRow(value) {
-            const appGrids = document.querySelectorAll('.app-grid');
-            appGrids.forEach(grid => {
+        // ========== 每行按钮数量控制 ==========
+        function updateButtonsPerRow(value) {
+            const buttonGrids = document.querySelectorAll('.button-grid');
+            buttonGrids.forEach(grid => {
                 grid.style.gridTemplateColumns = `repeat(${value}, 1fr)`;
             });
-            document.getElementById('iconsPerRowValue').textContent = value;
-            document.getElementById('iconsPerRowPreview').textContent = value + '列';
+            document.getElementById('buttonsPerRowValue').textContent = value;
+            document.getElementById('buttonsPerRowPreview').textContent = value + '列';
         }
 
-        function saveIconsPerRow() {
-            const value = document.getElementById('iconsPerRow').value;
+        function saveButtonsPerRow() {
+            const value = document.getElementById('buttonsPerRow').value;
             if (!config) config = {};
-            config.iconsPerRow = parseInt(value);
-            alert(`已设置为每行 ${value} 个图标，保存到Gist后永久生效`);
+            config.buttonsPerRow = parseInt(value);
+            alert(`已设置为每行 ${value} 个按钮，保存到Gist后永久生效`);
         }
 
-        function loadIconsPerRow() {
-            if (config && config.iconsPerRow) {
-                const value = config.iconsPerRow;
-                document.getElementById('iconsPerRow').value = value;
-                updateIconsPerRow(value);
+        function loadButtonsPerRow() {
+            if (config && config.buttonsPerRow) {
+                const value = config.buttonsPerRow;
+                document.getElementById('buttonsPerRow').value = value;
+                updateButtonsPerRow(value);
             } else {
-                updateIconsPerRow(4); // 默认4列
+                updateButtonsPerRow(4); // 默认4列
             }
         }
 
@@ -1186,7 +1153,7 @@
             
             const indicator = document.getElementById('deviceIndicator');
             if (indicator) {
-                indicator.innerHTML = `📱 ${deviceType} | 宽度: ${width}px`;
+                indicator.innerHTML = `📱 ${deviceType} `;
             }
             
             return deviceType;
@@ -1499,7 +1466,7 @@
         window.onload = async function() {
             await loadConfig();
             updateBackgroundFromConfig();
-            loadIconsPerRow();
+            loadButtonsPerRow();
             
             detectDevice();
             
@@ -1530,7 +1497,7 @@
                 console.error('加载配置失败，使用默认配置', error);
                 config = {
                     bgInterval: 5,
-                    iconsPerRow: 4,
+                    buttonsPerRow: 4,
                     mobileBackgrounds: [
                         'https://images.unsplash.com/photo-1557683316-973673baf926?w=400',
                         'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=400'
@@ -1649,7 +1616,7 @@
             document.body.style.overflow = '';
         };
 
-        // ========== 渲染前台 - 使用手机桌面图标样式 ==========
+        // ========== 渲染前台 - 简洁按钮 ==========
         function renderFrontend() {
             window.videoConfig = {};
             config.videoButtons.forEach((v, idx) => {
@@ -1680,59 +1647,37 @@
                 window.videoConfig['video' + idx] = videoObj;
             });
             
-            // 渲染App下载图标 - 像手机桌面一样
+            // 渲染App下载按钮 - 简洁风格
             const appDiv = document.getElementById('appButtons');
             appDiv.innerHTML = '';
             config.appButtons.forEach(btn => {
-                const icon = document.createElement('div');
-                icon.className = 'app-icon';
-                icon.style.backgroundColor = btn.color || '#FFD447';
-                
-                let badges = '';
-                if (btn.password && btn.password.trim() !== '') {
-                    badges += '<span class="badge badge-lock">🔒</span>';
-                }
-                if (btn.autoRefresh) {
-                    badges += '<span class="badge badge-refresh">🔄</span>';
-                }
-                
-                let iconEmoji = btn.openType === 'fullscreen' ? '📱' : '🔗';
-                
-                icon.innerHTML = `
-                    <div class="icon-emoji">${iconEmoji}</div>
-                    <div class="icon-label">${btn.label || '下载'}</div>
-                    <div class="icon-badge">${badges}</div>
-                `;
-                
-                icon.onclick = () => handleAppButtonClick(btn);
-                appDiv.appendChild(icon);
+                const button = document.createElement('button');
+                button.className = 'simple-button';
+                button.style.backgroundColor = btn.color || '#FFD447';
+                button.style.color = (btn.color || '').toUpperCase() === '#FFD447' ? '#333' : 'white';
+                button.textContent = btn.label || '下载';
+                button.onclick = () => handleAppButtonClick(btn);
+                appDiv.appendChild(button);
             });
             
-            // 渲染视频图标 - 像手机桌面一样
+            // 渲染视频按钮 - 简洁风格
             const videoDiv = document.getElementById('videoButtons');
             videoDiv.innerHTML = '';
             config.videoButtons.forEach((v, idx) => {
                 const video = window.videoConfig['video' + idx];
-                const icon = document.createElement('div');
-                icon.className = 'app-icon';
-                icon.style.backgroundColor = video.color || (idx === 0 ? '#FF3B30' : (idx === 1 ? '#8A2BE2' : '#FF8C00'));
-                
-                let badges = v.password && v.password.trim() !== '' ? '<span class="badge badge-lock">🔒</span>' : '';
-                
-                icon.innerHTML = `
-                    <div class="icon-emoji">▶</div>
-                    <div class="icon-label">${v.label || ('视频' + (idx+1))}</div>
-                    <div class="icon-badge">${badges}</div>
-                `;
-                
-                icon.onclick = () => {
+                const button = document.createElement('button');
+                button.className = 'simple-button';
+                button.style.backgroundColor = video.color || (idx === 0 ? '#FF3B30' : (idx === 1 ? '#8A2BE2' : '#FF8C00'));
+                button.style.color = 'white';
+                button.textContent = v.label || ('视频' + (idx+1));
+                button.onclick = () => {
                     requestVideoPasswordAndPlay('video' + idx, video);
                 };
-                videoDiv.appendChild(icon);
+                videoDiv.appendChild(button);
             });
 
-            // 应用每行图标数量设置
-            loadIconsPerRow();
+            // 应用每行按钮数量设置
+            loadButtonsPerRow();
         }
 
         // ========== 渲染后台 ==========
@@ -1908,11 +1853,11 @@
             const desktopUrl1 = document.getElementById('desktopBgInput1').value.trim() || 'https://images.unsplash.com/photo-1557683316-973673baf926?w=1920';
             const desktopUrl2 = document.getElementById('desktopBgInput2').value.trim() || 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=1920';
             const bgInterval = parseInt(document.getElementById('bgInterval').value) || 5;
-            const iconsPerRow = parseInt(document.getElementById('iconsPerRow').value) || 4;
+            const buttonsPerRow = parseInt(document.getElementById('buttonsPerRow').value) || 4;
             
             const currentConfig = {
                 bgInterval: bgInterval,
-                iconsPerRow: iconsPerRow,
+                buttonsPerRow: buttonsPerRow,
                 mobileBackgrounds: [mobileUrl1, mobileUrl2],
                 desktopBackgrounds: [desktopUrl1, desktopUrl2],
                 appButtons: config.appButtons.map((_, idx) => ({
