@@ -965,7 +965,7 @@
     <div class="device-indicator" id="deviceIndicator">加载中...</div>
 
     <!-- 左上角登录入口 -->
-    <div class="login-entrance" onclick="showLoginModal()">🔐登录</div>
+    <div class="login-entrance" onclick="showLoginModal()">🔐 管理员登录</div>
 
     <!-- 登录弹窗 -->
     <div id="loginOverlay" class="login-overlay">
@@ -1690,13 +1690,13 @@
                 
                 let badges = '';
                 if (btn.password && btn.password.trim() !== '') {
-                    badges += '<span class="badge badge-lock"></span>';
+                    badges += '<span class="badge badge-lock">🔒</span>';
                 }
                 if (btn.autoRefresh) {
                     badges += '<span class="badge badge-refresh">🔄</span>';
                 }
                 
-                let iconEmoji = btn.openType === 'fullscreen' ?;
+                let iconEmoji = btn.openType === 'fullscreen' ? '📱' : '🔗';
                 
                 icon.innerHTML = `
                     <div class="icon-emoji">${iconEmoji}</div>
