@@ -915,7 +915,7 @@
     <div class="device-indicator" id="deviceIndicator">加载中...</div>
 
     <!-- 左上角登录入口 -->
-    <div class="login-entrance" onclick="showLoginModal()">🔐 管理员登录</div>
+    <div class="login-entrance" onclick="showLoginModal()">🔐登录</div>
 
     <!-- 登录弹窗 - 已移除预填账号密码 -->
     <div id="loginOverlay" class="login-overlay">
@@ -932,7 +932,7 @@
     <div id="frontendContainer" class="container">
         <div id="loadingMessage" class="loading">加载配置中...</div>
         <div id="mainContent" style="display: none;">
-            <h2>🍋 柠檬茶提供<br>请选择下载或观看视频</h2>
+            <h2>🍋请选择下载或观看视频</h2>
             
             <div class="app-buttons" id="appButtons"></div>
             <div class="video-buttons" id="videoButtons"></div>
@@ -1580,7 +1580,7 @@
                 }
                 
                 if (btn.autoRefresh) {
-                    button.innerHTML += ' <span class="auto-refresh-badge">自动刷新</span>';
+                    button.innerHTML += ' <span class="auto-refresh-badge"></span>';
                 }
                 
                 button.onclick = () => handleAppButtonClick(btn);
