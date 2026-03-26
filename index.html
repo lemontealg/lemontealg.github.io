@@ -1252,8 +1252,11 @@
         window.closeFullscreen = function() { document.getElementById('fullscreenOverlay').classList.remove('active'); document.getElementById('fullscreenFrame').src = 'about:blank'; document.body.style.overflow = ''; };
 
         // ========== InBox 功能 ==========
-        function getMessageId(msg, index) {
-            return msg.id || `${msg.date}_${index}`;
+        function getMessageId(msg) {
+            // 使用消息自带的唯一id，如果没有则用日期+标题生成一个稳定的id
+            if (msg.id) return msg.id;
+            // 如果没有id，用日期+标题+内容前50字生成一个稳定的id
+            return `${msg.date}_${msg.title}_${(msg.message || '').substring(0, 50)}`;
         }
 
         function loadReadStatus() {
@@ -1282,8 +1285,8 @@
         function getUnreadCount() {
             const messages = config?.inboxMessages || [];
             let unread = 0;
-            messages.forEach((msg, idx) => {
-                const msgId = getMessageId(msg, idx);
+            messages.forEach((msg) => {
+                const msgId = getMessageId(msg);
                 if (!readMessageIds.has(msgId)) unread++;
             });
             return unread;
@@ -1300,8 +1303,8 @@
             }
         }
 
-        function openFullMessage(msg, idx) {
-            const msgId = getMessageId(msg, idx);
+        function openFullMessage(msg) {
+            const msgId = getMessageId(msg);
             markAsRead(msgId);
             document.getElementById('fullMessageTitle').textContent = msg.title || '通知';
             const dateStr = msg.date ? new Date(msg.date).toLocaleString() : '未知时间';
@@ -1324,13 +1327,15 @@
                 return;
             }
             let html = '';
-            messages.forEach((msg, idx) => {
-                const msgId = getMessageId(msg, idx);
+            messages.forEach((msg) => {
+                const msgId = getMessageId(msg);
                 const isUnread = !readMessageIds.has(msgId);
                 const dateStr = msg.date ? new Date(msg.date).toLocaleString() : '未知时间';
                 const preview = (msg.message || '').substring(0, 60) + ((msg.message || '').length > 60 ? '...' : '');
+                // 转义 msg 对象用于 onclick
+                const msgStr = JSON.stringify(msg).replace(/"/g, '&quot;');
                 html += `
-                    <div class="inbox-item ${isUnread ? 'unread' : ''}" onclick="openFullMessage(${JSON.stringify(msg).replace(/"/g, '&quot;')}, ${idx})">
+                    <div class="inbox-item ${isUnread ? 'unread' : ''}" onclick="openFullMessage(${msgStr})">
                         <div class="inbox-item-title">
                             <span>${escapeHtml(msg.title || '通知')}</span>
                             ${isUnread ? '<span class="unread-dot"></span>' : ''}
@@ -1386,8 +1391,9 @@
                 return;
             }
             if (!config.inboxMessages) config.inboxMessages = [];
+            // 生成唯一且稳定的ID（使用时间戳+随机数）
             const newMsg = {
-                id: Date.now().toString() + '_' + Math.random(),
+                id: Date.now().toString() + '_' + Math.random().toString(36).substr(2, 8),
                 title: title || '新通知',
                 message: message,
                 date: new Date().toISOString()
@@ -1404,7 +1410,7 @@
         window.deleteInboxMessage = function(idx) {
             if (confirm('确定删除这条通知吗？')) {
                 const msg = config.inboxMessages[idx];
-                const msgId = getMessageId(msg, idx);
+                const msgId = getMessageId(msg);
                 readMessageIds.delete(msgId);
                 config.inboxMessages.splice(idx, 1);
                 saveReadStatus();
@@ -1449,8 +1455,12 @@
                 const res = await fetch(GIST_URL + '?t=' + Date.now());
                 config = await res.json();
                 if (!config.inboxMessages) config.inboxMessages = [];
-                config.inboxMessages.forEach((msg, idx) => {
-                    if (!msg.id) msg.id = Date.now() + '_' + idx;
+                // 确保每条消息都有稳定的id（如果从Gist加载的消息没有id，给它生成一个基于内容的稳定id）
+                config.inboxMessages.forEach((msg) => {
+                    if (!msg.id) {
+                        // 生成基于内容的稳定id，这样刷新后相同的消息会有相同的id
+                        msg.id = `${msg.date}_${(msg.title || '')}_${(msg.message || '').substring(0, 50)}`;
+                    }
                 });
             } catch(e) {
                 config = {
