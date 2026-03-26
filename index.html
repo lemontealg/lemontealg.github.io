@@ -79,14 +79,24 @@
             --button-font-size: 12px;
         }
 
-        .login-entrance {
+        /* 顶部按钮容器 - 左右布局 */
+        .top-bar {
             position: fixed;
             top: 15px;
             left: 15px;
+            right: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        .login-entrance {
+            pointer-events: auto;
             color: rgba(255, 255, 255, 0.8);
             font-size: 14px;
             cursor: pointer;
-            z-index: 100;
             padding: 8px 15px;
             border-radius: 20px;
             background: rgba(0, 0, 0, 0.3);
@@ -102,13 +112,10 @@
 
         /* InBox 铃铛按钮样式 */
         .inbox-bell {
-            position: fixed;
-            top: 15px;
-            right: 15px;
+            pointer-events: auto;
             color: rgba(255, 255, 255, 0.8);
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
-            z-index: 100;
             padding: 6px 12px;
             border-radius: 30px;
             background: rgba(0, 0, 0, 0.3);
@@ -118,6 +125,7 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            position: relative;
         }
 
         .inbox-bell:hover {
@@ -216,6 +224,16 @@
             padding: 15px;
             margin-bottom: 12px;
             border-left: 3px solid #FFD447;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .inbox-item:hover {
+            background: rgba(255,255,255,0.18);
+        }
+
+        .inbox-item.unread {
+            background: rgba(255, 212, 71, 0.15);
         }
 
         .inbox-item-title {
@@ -223,6 +241,17 @@
             color: #FFD447;
             font-size: 15px;
             margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .unread-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #FFD447;
+            border-radius: 50%;
+            display: inline-block;
         }
 
         .inbox-item-date {
@@ -231,11 +260,92 @@
             margin-bottom: 8px;
         }
 
-        .inbox-item-message {
-            color: rgba(255,255,255,0.9);
-            font-size: 13px;
+        .inbox-item-preview {
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
             line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        /* 全文查看弹窗 */
+        .full-message-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .full-message-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .full-message-box {
+            background: rgba(30, 30, 40, 0.98);
+            border-radius: 32px;
+            padding: 28px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 212, 71, 0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .full-message-overlay.active .full-message-box {
+            transform: scale(1);
+        }
+
+        .full-message-title {
+            color: #FFD447;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,212,71,0.3);
+        }
+
+        .full-message-date {
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        .full-message-content {
+            color: rgba(255,255,255,0.9);
+            font-size: 15px;
+            line-height: 1.6;
+            white-space: pre-wrap;
             word-break: break-word;
+            margin-bottom: 24px;
+        }
+
+        .full-message-close {
+            background: #FFD447;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            color: #1e1e2f;
         }
 
         .button-grid {
@@ -778,11 +888,14 @@
     </div>
 
     <div class="device-indicator" id="deviceIndicator">加载中...</div>
-    <div class="login-entrance" onclick="showLoginModal()">🔐登录</div>
-    <!-- InBox 铃铛按钮 -->
-    <div class="inbox-bell" onclick="toggleInboxDrawer()">
-        🔔
-        <span id="bellBadge" class="bell-badge" style="display: none;">0</span>
+    
+    <!-- 顶部按钮容器 - 左右布局 -->
+    <div class="top-bar">
+        <div class="login-entrance" onclick="showLoginModal()">🔐登录</div>
+        <div class="inbox-bell" onclick="toggleInboxDrawer()">
+            🔔
+            <span id="bellBadge" class="bell-badge" style="display: none;">0</span>
+        </div>
     </div>
 
     <!-- InBox 抽屉面板 -->
@@ -793,6 +906,16 @@
         </div>
         <div class="inbox-content" id="inboxContent">
             <div class="inbox-empty">暂无消息</div>
+        </div>
+    </div>
+
+    <!-- 全文查看弹窗 -->
+    <div id="fullMessageOverlay" class="full-message-overlay">
+        <div class="full-message-box">
+            <div class="full-message-title" id="fullMessageTitle"></div>
+            <div class="full-message-date" id="fullMessageDate"></div>
+            <div class="full-message-content" id="fullMessageContent"></div>
+            <button class="full-message-close" onclick="closeFullMessage()">关闭</button>
         </div>
     </div>
 
@@ -947,6 +1070,9 @@
         let pendingAppButton = null;
         let pendingVideoButton = null;
         let pendingVideoKey = null;
+        
+        // InBox 相关变量
+        let readMessageIds = new Set();
 
         function getRandomColor() { return COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)]; }
 
@@ -1126,16 +1252,69 @@
         window.closeFullscreen = function() { document.getElementById('fullscreenOverlay').classList.remove('active'); document.getElementById('fullscreenFrame').src = 'about:blank'; document.body.style.overflow = ''; };
 
         // ========== InBox 功能 ==========
-        function updateBellBadge() {
+        function getMessageId(msg, index) {
+            return msg.id || `${msg.date}_${index}`;
+        }
+
+        function loadReadStatus() {
+            const saved = localStorage.getItem('inbox_read_ids');
+            if (saved) {
+                try {
+                    const arr = JSON.parse(saved);
+                    readMessageIds = new Set(arr);
+                } catch(e) {}
+            }
+        }
+
+        function saveReadStatus() {
+            localStorage.setItem('inbox_read_ids', JSON.stringify([...readMessageIds]));
+        }
+
+        function markAsRead(msgId) {
+            if (!readMessageIds.has(msgId)) {
+                readMessageIds.add(msgId);
+                saveReadStatus();
+                updateBellBadge();
+                renderInboxDrawer();
+            }
+        }
+
+        function getUnreadCount() {
             const messages = config?.inboxMessages || [];
+            let unread = 0;
+            messages.forEach((msg, idx) => {
+                const msgId = getMessageId(msg, idx);
+                if (!readMessageIds.has(msgId)) unread++;
+            });
+            return unread;
+        }
+
+        function updateBellBadge() {
+            const unreadCount = getUnreadCount();
             const badge = document.getElementById('bellBadge');
-            if (messages.length > 0) {
-                badge.textContent = messages.length > 99 ? '99+' : messages.length;
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
                 badge.style.display = 'flex';
             } else {
                 badge.style.display = 'none';
             }
         }
+
+        function openFullMessage(msg, idx) {
+            const msgId = getMessageId(msg, idx);
+            markAsRead(msgId);
+            document.getElementById('fullMessageTitle').textContent = msg.title || '通知';
+            const dateStr = msg.date ? new Date(msg.date).toLocaleString() : '未知时间';
+            document.getElementById('fullMessageDate').textContent = dateStr;
+            document.getElementById('fullMessageContent').textContent = msg.message || '';
+            document.getElementById('fullMessageOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        window.closeFullMessage = function() {
+            document.getElementById('fullMessageOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        };
 
         function renderInboxDrawer() {
             const container = document.getElementById('inboxContent');
@@ -1146,12 +1325,18 @@
             }
             let html = '';
             messages.forEach((msg, idx) => {
+                const msgId = getMessageId(msg, idx);
+                const isUnread = !readMessageIds.has(msgId);
                 const dateStr = msg.date ? new Date(msg.date).toLocaleString() : '未知时间';
+                const preview = (msg.message || '').substring(0, 60) + ((msg.message || '').length > 60 ? '...' : '');
                 html += `
-                    <div class="inbox-item">
-                        <div class="inbox-item-title">${escapeHtml(msg.title || '通知')}</div>
+                    <div class="inbox-item ${isUnread ? 'unread' : ''}" onclick="openFullMessage(${JSON.stringify(msg).replace(/"/g, '&quot;')}, ${idx})">
+                        <div class="inbox-item-title">
+                            <span>${escapeHtml(msg.title || '通知')}</span>
+                            ${isUnread ? '<span class="unread-dot"></span>' : ''}
+                        </div>
                         <div class="inbox-item-date">${escapeHtml(dateStr)}</div>
-                        <div class="inbox-item-message">${escapeHtml(msg.message || '')}</div>
+                        <div class="inbox-item-preview">${escapeHtml(preview)}</div>
                     </div>
                 `;
             });
@@ -1173,7 +1358,7 @@
                     <div class="inbox-list-item">
                         <div class="inbox-list-content">
                             <div class="inbox-list-title">${escapeHtml(msg.title || '通知')}</div>
-                            <div class="inbox-list-message">${escapeHtml(msg.message || '')}</div>
+                            <div class="inbox-list-message">${escapeHtml((msg.message || '').substring(0, 80))}${(msg.message || '').length > 80 ? '...' : ''}</div>
                             <div class="inbox-list-date">${escapeHtml(dateStr)}</div>
                         </div>
                         <button class="delete-inbox-btn" onclick="deleteInboxMessage(${idx})">删除</button>
@@ -1201,11 +1386,13 @@
                 return;
             }
             if (!config.inboxMessages) config.inboxMessages = [];
-            config.inboxMessages.unshift({
+            const newMsg = {
+                id: Date.now().toString() + '_' + Math.random(),
                 title: title || '新通知',
                 message: message,
                 date: new Date().toISOString()
-            });
+            };
+            config.inboxMessages.unshift(newMsg);
             document.getElementById('inboxTitle').value = '';
             document.getElementById('inboxMessage').value = '';
             renderInboxAdminList();
@@ -1216,7 +1403,11 @@
 
         window.deleteInboxMessage = function(idx) {
             if (confirm('确定删除这条通知吗？')) {
+                const msg = config.inboxMessages[idx];
+                const msgId = getMessageId(msg, idx);
+                readMessageIds.delete(msgId);
                 config.inboxMessages.splice(idx, 1);
+                saveReadStatus();
                 renderInboxAdminList();
                 renderInboxDrawer();
                 updateBellBadge();
@@ -1225,7 +1416,9 @@
 
         window.clearAllInbox = function() {
             if (confirm('确定清空所有通知吗？不可恢复！')) {
+                readMessageIds.clear();
                 config.inboxMessages = [];
+                saveReadStatus();
                 renderInboxAdminList();
                 renderInboxDrawer();
                 updateBellBadge();
@@ -1256,6 +1449,9 @@
                 const res = await fetch(GIST_URL + '?t=' + Date.now());
                 config = await res.json();
                 if (!config.inboxMessages) config.inboxMessages = [];
+                config.inboxMessages.forEach((msg, idx) => {
+                    if (!msg.id) msg.id = Date.now() + '_' + idx;
+                });
             } catch(e) {
                 config = {
                     bgInterval: 5,
@@ -1275,6 +1471,7 @@
             }
             document.getElementById('loadingMessage').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
+            loadReadStatus();
             updateBellBadge();
             return config;
         }
